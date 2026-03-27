@@ -253,10 +253,16 @@ class AIService {
 
   /**
    * 调用 MiniMax API
+   * MiniMax 需要在 URL 中添加 GroupId 参数
    */
   async _callMinimax(prompt) {
+    const groupId = this.config.groupId;
+    const url = groupId 
+      ? `${this.config.baseUrl}/chat/completions?GroupId=${groupId}`
+      : `${this.config.baseUrl}/chat/completions`;
+    
     const response = await axios.post(
-      `${this.config.baseUrl}/chat/completions`,
+      url,
       {
         model: this.config.model,
         messages: [
@@ -280,7 +286,14 @@ class AIService {
       }
     );
     
-    return response.data.choices[0].message.content;
+    // MiniMax 返回格式可能不同
+    if (response.data.choices && response.data.choices[0]) {
+      return response.data.choices[0].message.content || response.data.choices[0].text;
+    }
+    if (response.data.reply) {
+      return response.data.reply;
+    }
+    return JSON.stringify(response.data);
   }
 
   /**

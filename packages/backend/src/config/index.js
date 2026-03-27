@@ -64,6 +64,7 @@ const config = {
     // MiniMax
     minimax: {
       apiKey: process.env.MINIMAX_API_KEY || '',
+      groupId: process.env.MINIMAX_GROUP_ID || '',
       baseUrl: process.env.MINIMAX_BASE_URL || 'https://api.minimax.chat/v1',
       model: process.env.MINIMAX_MODEL || 'MiniMax-Text-01',
     },
