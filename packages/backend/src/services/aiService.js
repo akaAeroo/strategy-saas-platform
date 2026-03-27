@@ -53,6 +53,9 @@ class AIService {
         case 'minimax':
           result = await this._callMinimax(prompt);
           break;
+        case 'opencode':
+          result = await this._callOpenCode(prompt);
+          break;
         case 'ollama':
           result = await this._callOllama(prompt);
           break;
@@ -294,6 +297,39 @@ class AIService {
       return response.data.reply;
     }
     return JSON.stringify(response.data);
+  }
+
+  /**
+   * 调用量化派 OpenCode API (星探·源曦)
+   * OpenAI 兼容格式
+   */
+  async _callOpenCode(prompt) {
+    const response = await axios.post(
+      `${this.config.baseUrl}/chat/completions`,
+      {
+        model: this.config.model,
+        messages: [
+          {
+            role: 'system',
+            content: '你是智能策略平台的人群诊断专家。请基于提供的人群数据，生成结构化诊断报告。'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: this.diagnosisConfig.temperature,
+        max_tokens: this.diagnosisConfig.maxTokens
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    
+    return response.data.choices[0].message.content;
   }
 
   /**

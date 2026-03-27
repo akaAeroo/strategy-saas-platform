@@ -47,6 +47,7 @@ async function registerInitCommand(name, options) {
         { name: 'Anthropic (Claude)', value: 'anthropic' },
         { name: 'Kimi / Kimi Code (Moonshot)', value: 'moonshot' },
         { name: 'MiniMax', value: 'minimax' },
+        { name: '🏢 量化派 OpenCode (星探·源曦)', value: 'opencode' },
         { name: '智谱 AI (ChatGLM)', value: 'zhipu' },
         { name: '百度文心一言', value: 'baidu' },
         { name: '阿里通义千问', value: 'alibaba' },
@@ -125,6 +126,10 @@ MINIMAX_API_KEY=${config.aiProvider === 'minimax' ? config.aiApiKey : ''}
 MINIMAX_MODEL=MiniMax-Text-01
 MINIMAX_BASE_URL=https://api.minimax.chat/v1
 
+# 量化派 OpenCode配置
+OPENCODE_API_KEY=${config.aiProvider === 'opencode' ? config.aiApiKey : ''}
+OPENCODE_MODEL=xingtan
+OPENCODE_BASE_URL=http://localhost:8000/v1
 # 百度文心配置
 BAIDU_API_KEY=${config.aiProvider === 'baidu' ? config.aiApiKey : ''}
 BAIDU_SECRET_KEY=

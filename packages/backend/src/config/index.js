@@ -20,7 +20,7 @@ const config = {
   
   // 云端大模型配置
   ai: {
-    provider: process.env.AI_PROVIDER || 'openai',
+    provider: process.env.AI_PROVIDER || 'minimax',
     
     // OpenAI
     openai: {
@@ -33,18 +33,6 @@ const config = {
     anthropic: {
       apiKey: process.env.ANTHROPIC_API_KEY || '',
       model: process.env.ANTHROPIC_MODEL || 'claude-3-opus-20240229',
-    },
-    
-    // 百度文心
-    baidu: {
-      apiKey: process.env.BAIDU_API_KEY || '',
-      secretKey: process.env.BAIDU_SECRET_KEY || '',
-    },
-    
-    // 阿里通义
-    alibaba: {
-      apiKey: process.env.ALIBABA_API_KEY || '',
-      model: process.env.ALIBABA_MODEL || 'qwen-max',
     },
     
     // Kimi (Moonshot)
@@ -67,6 +55,13 @@ const config = {
       groupId: process.env.MINIMAX_GROUP_ID || '',
       baseUrl: process.env.MINIMAX_BASE_URL || 'https://api.minimax.chat/v1',
       model: process.env.MINIMAX_MODEL || 'MiniMax-Text-01',
+    },
+    
+    // 量化派 OpenCode - 星探·源曦 (本地部署)
+    opencode: {
+      apiKey: process.env.OPENCODE_API_KEY || '',
+      baseUrl: process.env.OPENCODE_BASE_URL || 'http://localhost:8000/v1',
+      model: process.env.OPENCODE_MODEL || 'xingtan',
     },
     
     // 本地 Ollama
@@ -108,6 +103,12 @@ function validateConfig() {
   // 本地模型不需要 API Key
   if (aiProvider === 'ollama') {
     console.log(`✅ 使用本地模型: ${aiConfig.model} @ ${aiConfig.baseUrl}`);
+  } else if (aiProvider === 'opencode') {
+    if (!aiConfig.apiKey) {
+      console.warn(`⚠️ 未配置 OPENCODE API Key，请运行配置脚本设置`);
+    } else {
+      console.log(`✅ 使用量化派 OpenCode: ${aiConfig.model} @ ${aiConfig.baseUrl}`);
+    }
   } else if (!aiConfig || !aiConfig.apiKey) {
     console.warn(`⚠️ 未配置 ${aiProvider.toUpperCase()} API Key，AI诊断将不可用`);
   }
