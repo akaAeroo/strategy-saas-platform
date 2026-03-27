@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { Upload, FileSpreadsheet, X, Check, AlertCircle, Loader2 } from 'lucide-react';
-import { api } from '../services/api';
+import { Upload, FileSpreadsheet, X, AlertCircle, Loader2 } from 'lucide-react';
+import { uploadApi } from '../services/api';
 import './ExcelUpload.css';
 
 const ExcelUpload = ({ onUploadSuccess }) => {
@@ -49,9 +49,7 @@ const ExcelUpload = ({ onUploadSuccess }) => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await api.post('/upload/excel', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const response = await uploadApi.uploadExcel(formData);
 
       setUploadData(response);
       onUploadSuccess?.(response);

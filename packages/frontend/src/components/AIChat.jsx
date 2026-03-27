@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Sparkles, Loader2, Download, Lightbulb } from 'lucide-react';
+import { Send, Bot, User, Sparkles, Loader2, Lightbulb } from 'lucide-react';
+import { chatApi } from '../services/api';
 import './AIChat.css';
 
 const AIChat = ({ uploadData, onStrategyGenerated }) => {
@@ -14,14 +15,9 @@ const AIChat = ({ uploadData, onStrategyGenerated }) => {
   useEffect(() => {
     const createSession = async () => {
       try {
-        const response = await fetch('/api/chat/create', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ uploadData })
-        });
-        const data = await response.json();
-        if (data.code === 0) {
-          setSessionId(data.data.sessionId);
+        const data = await chatApi.createSession(uploadData);
+        if (data && data.sessionId) {
+          setSessionId(data.sessionId);
           // 添加欢迎消息
           setMessages([{
             role: 'assistant',
@@ -110,22 +106,14 @@ const AIChat = ({ uploadData, onStrategyGenerated }) => {
     setGeneratingStrategy(true);
     
     try {
-      const response = await fetch('/api/chat/strategy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId })
-      });
+      const strategy = await chatApi.generateStrategy(sessionId);
       
-      const data = await response.json();
-      
-      if (data.code === 0) {
-        const strategy = data.data;
-        
+      if (strategy) {
         // 添加策略消息
         setMessages(prev => [...prev, {
           role: 'assistant',
           content: strategy.type === 'structured' 
-            ? `## 🎯 ${strategy.data.策略名称 || strategy.data.strategy_name || '运营策略'}\n\n${JSON.stringify(strategy.data, null, 2)}`
+            ? `## 🎯 ${strategy.data?.策略名称 || strategy.data?.strategy_name || '运营策略'}\n\n${JSON.stringify(strategy.data, null, 2)}`
             : strategy.data,
           timestamp: Date.now(),
           isStrategy: true,
