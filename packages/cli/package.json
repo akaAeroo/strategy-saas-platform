@@ -1,0 +1,23 @@
+{
+  "name": "@company/strategy-cli",
+  "version": "1.0.0",
+  "description": "智能策略平台 CLI 工具",
+  "main": "bin/strategy-cli.js",
+  "bin": {
+    "strategy-cli": "./bin/strategy-cli.js"
+  },
+  "scripts": {
+    "dev": "node bin/strategy-cli.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "commander": "^11.0.0",
+    "chalk": "^4.1.2",
+    "fs-extra": "^11.1.0",
+    "inquirer": "^8.2.6",
+    "axios": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

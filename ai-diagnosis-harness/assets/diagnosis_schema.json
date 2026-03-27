@@ -1,0 +1,113 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AI Diagnosis Report",
+  "type": "object",
+  "required": ["segment_id", "segment_name", "health_score", "problems", "opportunities", "suggestions", "generated_at"],
+  "properties": {
+    "segment_id": {
+      "type": "string",
+      "description": "人群ID"
+    },
+    "segment_name": {
+      "type": "string",
+      "description": "人群名称"
+    },
+    "health_score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "健康度评分 0-100"
+    },
+    "health_level": {
+      "type": "string",
+      "enum": ["excellent", "good", "warning", "critical"],
+      "description": "健康等级"
+    },
+    "summary": {
+      "type": "string",
+      "description": "诊断摘要"
+    },
+    "problems": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Problem"
+      }
+    },
+    "opportunities": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Opportunity"
+      }
+    },
+    "suggestions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Suggestion"
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "scale": { "type": "integer", "minimum": 0 },
+        "conversion_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "churn_rate_7d": { "type": "number", "minimum": 0, "maximum": 1 },
+        "churn_rate_30d": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "definitions": {
+    "Problem": {
+      "type": "object",
+      "required": ["id", "severity", "title", "description"],
+      "properties": {
+        "id": { "type": "string" },
+        "severity": {
+          "type": "string",
+          "enum": ["critical", "warning", "info"]
+        },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "metric": { "type": "string" },
+        "current_value": { "type": "number" },
+        "previous_value": { "type": "number" },
+        "change_percent": { "type": "number" },
+        "affected_users": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "Opportunity": {
+      "type": "object",
+      "required": ["id", "type", "title", "potential_impact"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["growth", "retention", "reactivation"]
+        },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "potential_users": { "type": "integer", "minimum": 0 },
+        "potential_gmv": { "type": "number", "minimum": 0 },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "Suggestion": {
+      "type": "object",
+      "required": ["id", "action", "priority"],
+      "properties": {
+        "id": { "type": "string" },
+        "action": { "type": "string" },
+        "priority": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "expected_outcome": { "type": "string" },
+        "related_problem_id": { "type": "string" }
+      }
+    }
+  }
+}

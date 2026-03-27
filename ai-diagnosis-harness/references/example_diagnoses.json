@@ -1,0 +1,168 @@
+[
+  {
+    "segment_id": "seg_high_value",
+    "segment_name": "高价值用户",
+    "health_score": 72,
+    "health_level": "warning",
+    "summary": "该人群健康度评分为72分，整体良好但需关注流失风险。近7天流失率上升23%，建议立即启动召回策略。",
+    "problems": [
+      {
+        "id": "p1",
+        "severity": "warning",
+        "title": "流失率上升",
+        "description": "近7天流失率上升23% (5% → 6.15%)，主要受竞品大促活动影响",
+        "metric": "churn_rate_7d",
+        "current_value": 0.0615,
+        "previous_value": 0.05,
+        "change_percent": 23,
+        "affected_users": 125000
+      }
+    ],
+    "opportunities": [
+      {
+        "id": "o1",
+        "type": "reactivation",
+        "title": "高潜召回用户",
+        "description": "12.5万用户有流失风险但近期仍有访问，召回成功率预计较高",
+        "potential_users": 125000,
+        "potential_gmv": 1800000,
+        "confidence": 0.82
+      }
+    ],
+    "suggestions": [
+      {
+        "id": "s1",
+        "action": "启动限时优惠券召回策略",
+        "priority": 1,
+        "expected_outcome": "预计召回率8%，GMV提升180万",
+        "related_problem_id": "p1"
+      },
+      {
+        "id": "s2",
+        "action": "竞品用户专属权益",
+        "priority": 2,
+        "expected_outcome": "提升用户忠诚度",
+        "related_problem_id": "p1"
+      }
+    ],
+    "metrics": {
+      "scale": 500000,
+      "conversion_rate": 0.085,
+      "churn_rate_7d": 0.0615,
+      "churn_rate_30d": 0.12
+    },
+    "generated_at": "2024-03-26T10:00:00Z"
+  },
+  {
+    "segment_id": "seg_new_users",
+    "segment_name": "新用户",
+    "health_score": 45,
+    "health_level": "critical",
+    "summary": "该人群健康度评分为45分，存在严重问题。新用户7日留存率仅15%，远低于行业平均水平。",
+    "problems": [
+      {
+        "id": "p1",
+        "severity": "critical",
+        "title": "留存率极低",
+        "description": "新用户7日留存率仅15%，环比下降了30%",
+        "metric": "retention_7d",
+        "current_value": 0.15,
+        "previous_value": 0.21,
+        "change_percent": -30,
+        "affected_users": 360000
+      },
+      {
+        "id": "p2",
+        "severity": "warning",
+        "title": "首单转化率下降",
+        "description": "首单转化率下降至2.1%，新用户激活不足",
+        "metric": "first_order_rate",
+        "current_value": 0.021,
+        "previous_value": 0.028,
+        "change_percent": -25,
+        "affected_users": 1200000
+      }
+    ],
+    "opportunities": [
+      {
+        "id": "o1",
+        "type": "retention",
+        "title": "新用户教育",
+        "description": "通过新手指引提升留存，预计可挽回20%流失用户",
+        "potential_users": 240000,
+        "potential_gmv": 480000,
+        "confidence": 0.75
+      }
+    ],
+    "suggestions": [
+      {
+        "id": "s1",
+        "action": "优化新用户引导流程",
+        "priority": 1,
+        "expected_outcome": "7日留存率提升至25%",
+        "related_problem_id": "p1"
+      },
+      {
+        "id": "s2",
+        "action": "首单专享优惠券",
+        "priority": 1,
+        "expected_outcome": "首单转化率提升至5%",
+        "related_problem_id": "p2"
+      }
+    ],
+    "metrics": {
+      "scale": 1200000,
+      "conversion_rate": 0.021,
+      "churn_rate_7d": 0.15,
+      "churn_rate_30d": 0.45
+    },
+    "generated_at": "2024-03-26T10:00:00Z"
+  },
+  {
+    "segment_id": "seg_silent",
+    "segment_name": "沉默用户",
+    "health_score": 35,
+    "health_level": "critical",
+    "summary": "该人群健康度评分为35分，严重不健康。30天未活跃用户占比达60%，急需召回策略。",
+    "problems": [
+      {
+        "id": "p1",
+        "severity": "critical",
+        "title": "长期沉默",
+        "description": "60%用户超过30天未活跃，沉默风险极高",
+        "metric": "inactive_rate_30d",
+        "current_value": 0.60,
+        "previous_value": 0.55,
+        "change_percent": 9,
+        "affected_users": 480000
+      }
+    ],
+    "opportunities": [
+      {
+        "id": "o1",
+        "type": "reactivation",
+        "title": "沉默用户唤醒",
+        "description": "针对180天内有过购买的用户进行召回",
+        "potential_users": 320000,
+        "potential_gmv": 960000,
+        "confidence": 0.68
+      }
+    ],
+    "suggestions": [
+      {
+        "id": "s1",
+        "action": "大额优惠券召回",
+        "priority": 1,
+        "expected_outcome": "召回率5%，唤醒16万用户",
+        "related_problem_id": "p1"
+      }
+    ],
+    "metrics": {
+      "scale": 800000,
+      "conversion_rate": 0.005,
+      "churn_rate_7d": 0.02,
+      "churn_rate_30d": 0.60
+    },
+    "generated_at": "2024-03-26T10:00:00Z"
+  }
+]
