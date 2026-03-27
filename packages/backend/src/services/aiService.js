@@ -1,6 +1,6 @@
 /**
  * 云端大模型服务
- * 支持 OpenAI / Claude / 百度文心 / 阿里通义
+ * 支持 OpenAI / Claude / 百度文心 / 阿里通义 / Kimi / 智谱 / 本地模型
  */
 
 const axios = require('axios');
@@ -37,6 +37,15 @@ class AIService {
           break;
         case 'alibaba':
           result = await this._callAlibaba(prompt);
+          break;
+        case 'moonshot':
+          result = await this._callMoonshot(prompt);
+          break;
+        case 'zhipu':
+          result = await this._callZhipu(prompt);
+          break;
+        case 'ollama':
+          result = await this._callOllama(prompt);
           break;
         default:
           throw new Error(`不支持的AI提供商: ${this.provider}`);
@@ -167,6 +176,104 @@ class AIService {
     );
     
     return response.data.output.choices[0].message.content;
+  }
+
+  /**
+   * 调用 Kimi (Moonshot) API
+   */
+  async _callMoonshot(prompt) {
+    const response = await axios.post(
+      `${this.config.baseUrl}/chat/completions`,
+      {
+        model: this.config.model,
+        messages: [
+          {
+            role: 'system',
+            content: '你是智能策略平台的人群诊断专家。请基于提供的人群数据，生成结构化诊断报告。'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: this.diagnosisConfig.temperature,
+        max_tokens: this.diagnosisConfig.maxTokens
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    
+    return response.data.choices[0].message.content;
+  }
+
+  /**
+   * 调用智谱 AI (ChatGLM) API
+   */
+  async _callZhipu(prompt) {
+    const response = await axios.post(
+      `${this.config.baseUrl}/chat/completions`,
+      {
+        model: this.config.model,
+        messages: [
+          {
+            role: 'system',
+            content: '你是智能策略平台的人群诊断专家。'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: this.diagnosisConfig.temperature,
+        max_tokens: this.diagnosisConfig.maxTokens
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    
+    return response.data.choices[0].message.content;
+  }
+
+  /**
+   * 调用本地 Ollama API
+   */
+  async _callOllama(prompt) {
+    const response = await axios.post(
+      `${this.config.baseUrl}/api/chat`,
+      {
+        model: this.config.model,
+        messages: [
+          {
+            role: 'system',
+            content: '你是智能策略平台的人群诊断专家。请基于提供的人群数据，生成结构化诊断报告。'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        stream: false,
+        options: {
+          temperature: this.diagnosisConfig.temperature,
+          num_predict: this.diagnosisConfig.maxTokens
+        }
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    
+    return response.data.message.content;
   }
 
   /**

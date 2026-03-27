@@ -45,16 +45,34 @@ async function registerInitCommand(name, options) {
       choices: [
         { name: 'OpenAI (GPT-4)', value: 'openai' },
         { name: 'Anthropic (Claude)', value: 'anthropic' },
+        { name: 'Kimi / Kimi Code (Moonshot)', value: 'moonshot' },
+        { name: '智谱 AI (ChatGLM)', value: 'zhipu' },
         { name: '百度文心一言', value: 'baidu' },
-        { name: '阿里通义千问', value: 'alibaba' }
+        { name: '阿里通义千问', value: 'alibaba' },
+        { name: '🖥️  本地模型 (Ollama)', value: 'ollama' }
       ],
       default: 'openai'
     },
     {
       type: 'password',
       name: 'aiApiKey',
-      message: 'AI API密钥:',
-      mask: '*'
+      message: 'AI API密钥 (本地模型无需填写):',
+      mask: '*',
+      when: (answers) => answers.aiProvider !== 'ollama'
+    },
+    {
+      type: 'input',
+      name: 'ollamaUrl',
+      message: 'Ollama 服务地址:',
+      default: 'http://localhost:11434',
+      when: (answers) => answers.aiProvider === 'ollama'
+    },
+    {
+      type: 'input',
+      name: 'ollamaModel',
+      message: 'Ollama 模型名称:',
+      default: 'llama2',
+      when: (answers) => answers.aiProvider === 'ollama'
     }
   ]);
   
@@ -63,7 +81,9 @@ async function registerInitCommand(name, options) {
     audienceApiUrl: answers.audienceApiUrl,
     audienceApiKey: answers.audienceApiKey,
     aiProvider: answers.aiProvider,
-    aiApiKey: answers.aiApiKey
+    aiApiKey: answers.aiApiKey || '',
+    ollamaUrl: answers.ollamaUrl || 'http://localhost:11434',
+    ollamaModel: answers.ollamaModel || 'llama2'
   };
   
   // 生成后端 .env 文件
@@ -76,26 +96,44 @@ PORT=3001
 AUDIENCE_API_URL=${config.audienceApiUrl}
 AUDIENCE_API_KEY=${config.audienceApiKey}
 
-# AI配置
+# ============================================
+# AI模型配置
+# ============================================
 AI_PROVIDER=${config.aiProvider}
 
-# OpenAI配置 (如选择OpenAI)
+# OpenAI配置
 OPENAI_API_KEY=${config.aiProvider === 'openai' ? config.aiApiKey : ''}
 OPENAI_MODEL=gpt-4-turbo-preview
 
-# Anthropic配置 (如选择Claude)
+# Anthropic Claude配置
 ANTHROPIC_API_KEY=${config.aiProvider === 'anthropic' ? config.aiApiKey : ''}
 ANTHROPIC_MODEL=claude-3-opus-20240229
 
-# 百度配置 (如选择文心)
+# Kimi (Moonshot)配置
+MOONSHOT_API_KEY=${config.aiProvider === 'moonshot' ? config.aiApiKey : ''}
+MOONSHOT_MODEL=moonshot-v1-128k
+MOONSHOT_BASE_URL=https://api.moonshot.cn/v1
+
+# 智谱 AI (ChatGLM)配置
+ZHIPU_API_KEY=${config.aiProvider === 'zhipu' ? config.aiApiKey : ''}
+ZHIPU_MODEL=glm-4
+ZHIPU_BASE_URL=https://open.bigmodel.cn/api/paas/v4
+
+# 百度文心配置
 BAIDU_API_KEY=${config.aiProvider === 'baidu' ? config.aiApiKey : ''}
 BAIDU_SECRET_KEY=
 
-# 阿里配置 (如选择通义)
+# 阿里通义配置
 ALIBABA_API_KEY=${config.aiProvider === 'alibaba' ? config.aiApiKey : ''}
 ALIBABA_MODEL=qwen-max
 
-# CORS配置
+# 本地Ollama配置
+OLLAMA_BASE_URL=${config.ollamaUrl}
+OLLAMA_MODEL=${config.ollamaModel}
+
+# ============================================
+# 其他配置
+# ============================================
 CORS_ORIGIN=http://localhost:5173
 `;
   
@@ -108,6 +146,13 @@ CORS_ORIGIN=http://localhost:5173
   console.log('  2. strategy-cli doctor    # 检查环境');
   console.log('  3. strategy-cli dev       # 启动开发环境');
   console.log('');
+  
+  // 如果是本地模型，给出提示
+  if (config.aiProvider === 'ollama') {
+    console.log(chalk.yellow('💡 使用本地模型，请确保 Ollama 已安装并运行：'));
+    console.log('   ollama run ' + config.ollamaModel);
+    console.log('');
+  }
 }
 
 module.exports = { registerInitCommand };

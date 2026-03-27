@@ -47,6 +47,26 @@ const config = {
       model: process.env.ALIBABA_MODEL || 'qwen-max',
     },
     
+    // Kimi (Moonshot)
+    moonshot: {
+      apiKey: process.env.MOONSHOT_API_KEY || '',
+      baseUrl: process.env.MOONSHOT_BASE_URL || 'https://api.moonshot.cn/v1',
+      model: process.env.MOONSHOT_MODEL || 'moonshot-v1-128k',
+    },
+    
+    // 智谱 AI (ChatGLM)
+    zhipu: {
+      apiKey: process.env.ZHIPU_API_KEY || '',
+      baseUrl: process.env.ZHIPU_BASE_URL || 'https://open.bigmodel.cn/api/paas/v4',
+      model: process.env.ZHIPU_MODEL || 'glm-4',
+    },
+    
+    // 本地 Ollama
+    ollama: {
+      baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
+      model: process.env.OLLAMA_MODEL || 'llama2',
+    },
+    
     // 诊断参数
     diagnosis: {
       temperature: parseFloat(process.env.AI_DIAGNOSIS_TEMPERATURE) || 0.3,
@@ -77,7 +97,10 @@ function validateConfig() {
   const aiProvider = config.ai.provider;
   const aiConfig = config.ai[aiProvider];
   
-  if (!aiConfig || !aiConfig.apiKey) {
+  // 本地模型不需要 API Key
+  if (aiProvider === 'ollama') {
+    console.log(`✅ 使用本地模型: ${aiConfig.model} @ ${aiConfig.baseUrl}`);
+  } else if (!aiConfig || !aiConfig.apiKey) {
     console.warn(`⚠️ 未配置 ${aiProvider.toUpperCase()} API Key，AI诊断将不可用`);
   }
   
