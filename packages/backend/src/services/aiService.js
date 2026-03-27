@@ -44,6 +44,15 @@ class AIService {
         case 'zhipu':
           result = await this._callZhipu(prompt);
           break;
+        case 'moonshot':
+          result = await this._callMoonshot(prompt);
+          break;
+        case 'zhipu':
+          result = await this._callZhipu(prompt);
+          break;
+        case 'minimax':
+          result = await this._callMinimax(prompt);
+          break;
         case 'ollama':
           result = await this._callOllama(prompt);
           break;
@@ -222,6 +231,38 @@ class AIService {
           {
             role: 'system',
             content: '你是智能策略平台的人群诊断专家。'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: this.diagnosisConfig.temperature,
+        max_tokens: this.diagnosisConfig.maxTokens
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    
+    return response.data.choices[0].message.content;
+  }
+
+  /**
+   * 调用 MiniMax API
+   */
+  async _callMinimax(prompt) {
+    const response = await axios.post(
+      `${this.config.baseUrl}/chat/completions`,
+      {
+        model: this.config.model,
+        messages: [
+          {
+            role: 'system',
+            content: '你是智能策略平台的人群诊断专家。请基于提供的人群数据，生成结构化诊断报告。'
           },
           {
             role: 'user',

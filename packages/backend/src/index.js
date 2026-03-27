@@ -10,6 +10,8 @@ const path = require('path');
 const { config, validateConfig } = require('./config');
 const segmentsRouter = require('./routes/segments');
 const dashboardRouter = require('./routes/dashboard');
+const uploadRouter = require('./routes/upload');
+const chatRouter = require('./routes/chat');
 
 const app = express();
 
@@ -39,6 +41,8 @@ app.get('/health', (req, res) => {
 // API 路由
 app.use('/api/segments', segmentsRouter);
 app.use('/api/dashboard', dashboardRouter);
+app.use('/api/upload', uploadRouter);
+app.use('/api/chat', chatRouter);
 
 // 错误处理
 app.use((err, req, res, next) => {

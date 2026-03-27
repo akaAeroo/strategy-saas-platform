@@ -11,17 +11,20 @@ import {
   Moon,
   Sun,
   Sparkles,
-  ChevronRight
+  ChevronRight,
+  FileSpreadsheet
 } from 'lucide-react'
 import Dashboard from './pages/Dashboard'
 import Segments from './pages/Segments'
 import SegmentDetail from './pages/SegmentDetail'
+import DataImport from './pages/DataImport'
 import './App.css'
 
 // 侧边栏导航项
 const navItems = [
   { path: '/', icon: LayoutDashboard, label: '总览', badge: null },
   { path: '/segments', icon: Users, label: '人群管理', badge: null },
+  { path: '/import', icon: FileSpreadsheet, label: '数据导入', badge: null },
 ]
 
 // 主题切换组件
@@ -122,6 +125,7 @@ const Header = ({ onMenuClick }) => {
     switch (location.pathname) {
       case '/': return '总览'
       case '/segments': return '人群管理'
+      case '/import': return '数据导入'
       default:
         if (location.pathname.startsWith('/segments/')) return '人群详情'
         return '智能策略平台'
@@ -170,6 +174,7 @@ const Layout = () => {
             <Route path="/" element={<Dashboard />} />
             <Route path="/segments" element={<Segments />} />
             <Route path="/segments/:id" element={<SegmentDetail />} />
+            <Route path="/import" element={<DataImport />} />
           </Routes>
         </main>
       </div>

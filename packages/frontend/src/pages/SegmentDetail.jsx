@@ -1,44 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import {
-  Card,
-  Descriptions,
-  Tag,
-  Button,
-  Spin,
-  Alert,
-  Statistic,
-  Row,
-  Col,
-  Timeline,
-  List,
-  Progress,
-  message,
-  Divider
-} from 'antd'
-import {
-  ArrowLeftOutlined,
-  MedicineBoxOutlined,
-  ReloadOutlined,
-  WarningOutlined,
-  CheckCircleOutlined,
-  InfoCircleOutlined,
-  BulbOutlined,
-  RiseOutlined,
-  FallOutlined
-} from '@ant-design/icons'
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  AreaChart,
-  Area
-} from 'recharts'
+import { 
+  ArrowLeft, 
+  Sparkles, 
+  RefreshCw,
+  AlertCircle,
+  Lightbulb,
+  Target,
+  TrendingUp,
+  Users,
+  Activity,
+  CheckCircle2,
+  Clock
+} from 'lucide-react'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts'
 import { segmentsApi } from '../services/api'
+import './SegmentDetail.css'
 
 const SegmentDetail = () => {
   const { id } = useParams()
@@ -57,8 +34,6 @@ const SegmentDetail = () => {
   const fetchData = async () => {
     try {
       setLoading(true)
-      
-      // 并行获取数据
       const [segmentData, metricsData] = await Promise.all([
         segmentsApi.getDetail(id),
         segmentsApi.getMetrics(id)
@@ -67,24 +42,21 @@ const SegmentDetail = () => {
       setSegment(segmentData)
       setMetrics(metricsData)
       
-      // 获取诊断结果（可能不存在）
       try {
         const diagnosisData = await segmentsApi.getDiagnosis(id)
         setDiagnosis(diagnosisData)
       } catch {
-        // 无诊断结果，忽略错误
+        // 无诊断结果
       }
       
-      // 获取趋势数据
       try {
         const trendData = await segmentsApi.getTrend(id, 30)
         setTrend(trendData || [])
       } catch {
         setTrend([])
       }
-      
     } catch (error) {
-      message.error('获取数据失败')
+      console.error('获取数据失败:', error)
     } finally {
       setLoading(false)
     }
@@ -93,324 +65,328 @@ const SegmentDetail = () => {
   const handleDiagnose = async () => {
     try {
       setDiagnosing(true)
-      message.loading({ content: 'AI正在分析人群数据...', duration: 0 })
-      
       const result = await segmentsApi.diagnose(id)
       setDiagnosis(result)
-      
-      message.destroy()
-      message.success('AI诊断完成！')
     } catch (error) {
-      message.destroy()
-      message.error('诊断失败: ' + error.message)
+      console.error('诊断失败:', error)
     } finally {
       setDiagnosing(false)
     }
   }
 
   const getHealthColor = (score) => {
-    if (score >= 80) return '#52c41a'
-    if (score >= 60) return '#faad14'
-    return '#f5222d'
+    if (score >= 80) return '#10b981'
+    if (score >= 60) return '#3b82f6'
+    if (score >= 40) return '#f59e0b'
+    return '#ef4444'
   }
 
-  const getHealthLevelText = (level) => {
-    const map = {
-      excellent: '优秀',
-      good: '良好',
-      warning: '需关注',
-      critical: '严重'
-    }
+  const getHealthLevel = (level) => {
+    const map = { excellent: '优秀', good: '良好', warning: '需关注', critical: '严重' }
     return map[level] || level
   }
 
   const getSeverityIcon = (severity) => {
-    switch (severity) {
-      case 'critical':
-        return <WarningOutlined style={{ color: '#f5222d' }} />
-      case 'warning':
-        return <WarningOutlined style={{ color: '#faad14' }} />
-      default:
-        return <InfoCircleOutlined style={{ color: '#1890ff' }} />
-    }
-  }
-
-  const getSeverityColor = (severity) => {
-    const colors = {
-      critical: 'red',
-      warning: 'orange',
-      info: 'blue'
-    }
-    return colors[severity] || 'default'
+    const colors = { critical: '#ef4444', warning: '#f59e0b', info: '#3b82f6' }
+    return colors[severity] || '#6b7280'
   }
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: 100 }}>
-        <Spin size="large" />
-        <p style={{ marginTop: 16 }}>加载中...</p>
+      <div className="page-loading">
+        <div className="loading-spinner" />
+        <p>加载中...</p>
       </div>
     )
   }
 
   return (
-    <div>
-      {/* 顶部导航 */}
-      <div style={{ marginBottom: 24 }}>
-        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/segments')}>
-          返回列表
-        </Button>
+    <div className="segment-detail-page animate-fade-in">
+      {/* 返回按钮 */}
+      <button className="back-btn" onClick={() => navigate('/segments')}>
+        <ArrowLeft size={18} />
+        返回人群列表
+      </button>
+
+      {/* 页面头部 */}
+      <div className="detail-header">
+        <div className="detail-title-section">
+          <div className="detail-badge">P{segment?.level}</div>
+          <h1 className="detail-title">{segment?.name}</h1>
+        </div>
+        <button 
+          className={`diagnose-action-btn ${diagnosing ? 'loading' : ''}`}
+          onClick={handleDiagnose}
+          disabled={diagnosing}
+        >
+          {diagnosing ? <RefreshCw className="spin" size={18} /> : <Sparkles size={18} />}
+          {diagnosis ? '重新诊断' : 'AI 诊断'}
+        </button>
       </div>
 
-      {/* 人群基本信息 */}
-      <Card style={{ marginBottom: 24 }}>
-        <Descriptions
-          title={
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={{ fontSize: 20 }}>{segment?.name}</span>
-              <Tag color={segment?.level === 1 ? 'red' : segment?.level === 2 ? 'orange' : 'blue'}>
-                P{segment?.level}
-              </Tag>
+      {/* 描述 */}
+      <p className="detail-description">{segment?.description}</p>
+
+      {/* 指标卡片 */}
+      <div className="metrics-row">
+        <div className="metric-card">
+          <div className="metric-icon blue">
+            <Users size={20} />
+          </div>
+          <div className="metric-info">
+            <span className="metric-label">用户规模</span>
+            <span className="metric-value">{metrics?.scale?.toLocaleString()}</span>
+          </div>
+        </div>
+        <div className="metric-card">
+          <div className="metric-icon green">
+            <TrendingUp size={20} />
+          </div>
+          <div className="metric-info">
+            <span className="metric-label">转化率</span>
+            <span className="metric-value">{(metrics?.conversion_rate * 100).toFixed(2)}%</span>
+          </div>
+        </div>
+        <div className="metric-card">
+          <div className="metric-icon orange">
+            <Activity size={20} />
+          </div>
+          <div className="metric-info">
+            <span className="metric-label">7日流失率</span>
+            <span className="metric-value">{(metrics?.churn_rate_7d * 100).toFixed(2)}%</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="detail-content-grid">
+        {/* 左侧：AI 诊断 */}
+        <div className="detail-main">
+          {!diagnosis ? (
+            <div className="empty-diagnosis">
+              <div className="empty-icon">
+                <Sparkles size={48} />
+              </div>
+              <h3>尚未进行 AI 诊断</h3>
+              <p>点击右上角「AI 诊断」按钮，使用大模型分析该人群的健康状况</p>
             </div>
-          }
-          bordered
-          column={4}
-        >
-          <Descriptions.Item label="人群ID">{segment?.id}</Descriptions.Item>
-          <Descriptions.Item label="用户规模">
-            {metrics?.scale?.toLocaleString()} 人
-          </Descriptions.Item>
-          <Descriptions.Item label="转化率">
-            {(metrics?.conversion_rate * 100).toFixed(2)}%
-          </Descriptions.Item>
-          <Descriptions.Item label="7日流失率">
-            {(metrics?.churn_rate_7d * 100).toFixed(2)}%
-          </Descriptions.Item>
-          <Descriptions.Item label="描述" span={4}>
-            {segment?.description || '-'}
-          </Descriptions.Item>
-        </Descriptions>
-      </Card>
-
-      <Row gutter={24}>
-        {/* 左侧：AI诊断 */}
-        <Col span={10}>
-          <Card
-            title={
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <MedicineBoxOutlined />
-                <span>AI 诊断报告</span>
-              </div>
-            }
-            extra={
-              <Button
-                type="primary"
-                icon={<MedicineBoxOutlined />}
-                loading={diagnosing}
-                onClick={handleDiagnose}
-              >
-                {diagnosis ? '重新诊断' : '开始诊断'}
-              </Button>
-            }
-          >
-            {!diagnosis ? (
-              <Alert
-                message="尚未进行AI诊断"
-                description="点击右上角的按钮，调用云端大模型分析该人群的健康状况。"
-                type="info"
-                showIcon
-              />
-            ) : (
-              <div>
-                {/* 健康度评分 */}
-                <div style={{ textAlign: 'center', padding: '24px 0', borderBottom: '1px solid #f0f0f0' }}>
-                  <div style={{ fontSize: 48, fontWeight: 'bold', color: getHealthColor(diagnosis.health_score) }}>
-                    {diagnosis.health_score}
+          ) : (
+            <>
+              {/* 健康度评分 */}
+              <div className="health-score-card">
+                <div className="health-score-circle" style={{ '--health-color': getHealthColor(diagnosis.health_score) }}>
+                  <svg viewBox="0 0 100 100">
+                    <circle className="track" cx="50" cy="50" r="45" />
+                    <circle 
+                      className="progress" 
+                      cx="50" 
+                      cy="50" 
+                      r="45" 
+                      style={{ 
+                        strokeDasharray: `${diagnosis.health_score * 2.83} 283`,
+                        stroke: getHealthColor(diagnosis.health_score)
+                      }}
+                    />
+                  </svg>
+                  <div className="score-content">
+                    <span className="score-number">{diagnosis.health_score}</span>
+                    <span className="score-unit">分</span>
                   </div>
-                  <div style={{ fontSize: 16, color: '#666', marginTop: 8 }}>
-                    健康度评分 - {getHealthLevelText(diagnosis.health_level)}
-                  </div>
-                  <Progress
-                    percent={diagnosis.health_score}
-                    strokeColor={getHealthColor(diagnosis.health_score)}
-                    showInfo={false}
-                    style={{ marginTop: 16 }}
-                  />
                 </div>
+                <div className="health-info">
+                  <span className="health-level" style={{ color: getHealthColor(diagnosis.health_score) }}>
+                    {getHealthLevel(diagnosis.health_level)}
+                  </span>
+                  <p className="health-summary">{diagnosis.summary}</p>
+                </div>
+              </div>
 
-                {/* 诊断摘要 */}
-                {diagnosis.summary && (
-                  <div style={{ padding: '16px 0', borderBottom: '1px solid #f0f0f0' }}>
-                    <h4>诊断摘要</h4>
-                    <p style={{ color: '#666' }}>{diagnosis.summary}</p>
+              {/* 问题列表 */}
+              {diagnosis.problems?.length > 0 && (
+                <div className="section-card">
+                  <div className="section-header">
+                    <AlertCircle size={18} />
+                    <h3>发现问题 ({diagnosis.problems.length})</h3>
                   </div>
-                )}
-
-                {/* 发现问题 */}
-                {diagnosis.problems && diagnosis.problems.length > 0 && (
-                  <div style={{ padding: '16px 0', borderBottom: '1px solid #f0f0f0' }}>
-                    <h4 style={{ color: '#f5222d', marginBottom: 12 }}>
-                      <WarningOutlined /> 发现问题 ({diagnosis.problems.length}个)
-                    </h4>
-                    <Timeline>
-                      {diagnosis.problems.map((problem) => (
-                        <Timeline.Item
-                          key={problem.id}
-                          dot={getSeverityIcon(problem.severity)}
-                          color={getSeverityColor(problem.severity)}
-                        >
-                          <div>
-                            <Tag color={getSeverityColor(problem.severity)}>
-                              {problem.severity === 'critical' ? '严重' : 
-                               problem.severity === 'warning' ? '警告' : '提示'}
-                            </Tag>
-                            <strong style={{ marginLeft: 8 }}>{problem.title}</strong>
-                            <p style={{ color: '#666', marginTop: 4, marginBottom: 4 }}>
-                              {problem.description}
-                            </p>
-                            {problem.change_percent && (
-                              <span style={{ fontSize: 12 }}>
-                                变化: {problem.change_percent > 0 ? '+' : ''}
-                                {problem.change_percent}%
-                              </span>
-                            )}
-                          </div>
-                        </Timeline.Item>
-                      ))}
-                    </Timeline>
-                  </div>
-                )}
-
-                {/* 机会洞察 */}
-                {diagnosis.opportunities && diagnosis.opportunities.length > 0 && (
-                  <div style={{ padding: '16px 0', borderBottom: '1px solid #f0f0f0' }}>
-                    <h4 style={{ color: '#52c41a', marginBottom: 12 }}>
-                      <BulbOutlined /> 机会洞察 ({diagnosis.opportunities.length}个)
-                    </h4>
-                    <List
-                      dataSource={diagnosis.opportunities}
-                      renderItem={(item) => (
-                        <List.Item>
-                          <List.Item.Meta
-                            title={item.title}
-                            description={item.description}
-                          />
-                          {item.potential_users && (
-                            <Tag color="green">
-                              潜在 {item.potential_users?.toLocaleString()} 人
-                            </Tag>
+                  <div className="problems-list">
+                    {diagnosis.problems.map((problem) => (
+                      <div key={problem.id} className="problem-item">
+                        <div 
+                          className="problem-severity" 
+                          style={{ background: getSeverityIcon(problem.severity) }}
+                        />
+                        <div className="problem-content">
+                          <h4>{problem.title}</h4>
+                          <p>{problem.description}</p>
+                          {problem.change_percent && (
+                            <span className="problem-change">
+                              变化: {problem.change_percent > 0 ? '+' : ''}{problem.change_percent}%
+                            </span>
                           )}
-                        </List.Item>
-                      )}
-                    />
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                )}
+                </div>
+              )}
 
-                {/* 策略建议 */}
-                {diagnosis.suggestions && diagnosis.suggestions.length > 0 && (
-                  <div style={{ padding: '16px 0' }}>
-                    <h4 style={{ marginBottom: 12 }}>
-                      <CheckCircleOutlined /> 策略建议
-                    </h4>
-                    <List
-                      dataSource={diagnosis.suggestions}
-                      renderItem={(item, index) => (
-                        <List.Item>
-                          <div>
-                            <Tag color="blue">P{item.priority}</Tag>
-                            <span style={{ marginLeft: 8 }}>{item.action}</span>
-                            {item.expected_outcome && (
-                              <p style={{ color: '#666', fontSize: 12, marginTop: 4 }}>
-                                预期效果: {item.expected_outcome}
-                              </p>
-                            )}
-                          </div>
-                        </List.Item>
-                      )}
-                    />
+              {/* 机会洞察 */}
+              {diagnosis.opportunities?.length > 0 && (
+                <div className="section-card">
+                  <div className="section-header">
+                    <Lightbulb size={18} />
+                    <h3>机会洞察 ({diagnosis.opportunities.length})</h3>
                   </div>
-                )}
+                  <div className="opportunities-list">
+                    {diagnosis.opportunities.map((opportunity) => (
+                      <div key={opportunity.id} className="opportunity-item">
+                        <Target size={16} />
+                        <div className="opportunity-content">
+                          <h4>{opportunity.title}</h4>
+                          <p>{opportunity.description}</p>
+                          {opportunity.potential_users && (
+                            <span className="opportunity-potential">
+                              潜在用户: {opportunity.potential_users.toLocaleString()} 人
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-                {/* 诊断元信息 */}
-                <Divider />
-                <div style={{ fontSize: 12, color: '#999' }}>
-                  <div>诊断时间: {new Date(diagnosis.generated_at).toLocaleString()}</div>
-                  <div>AI模型: {diagnosis.ai_provider} / {diagnosis.ai_model}</div>
+              {/* 策略建议 */}
+              {diagnosis.suggestions?.length > 0 && (
+                <div className="section-card">
+                  <div className="section-header">
+                    <CheckCircle2 size={18} />
+                    <h3>策略建议</h3>
+                  </div>
+                  <div className="suggestions-list">
+                    {diagnosis.suggestions.map((suggestion, index) => (
+                      <div key={suggestion.id} className="suggestion-item">
+                        <span className="suggestion-priority">P{suggestion.priority}</span>
+                        <div className="suggestion-content">
+                          <p>{suggestion.action}</p>
+                          {suggestion.expected_outcome && (
+                            <span className="suggestion-outcome">
+                              预期: {suggestion.expected_outcome}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 诊断信息 */}
+              <div className="diagnosis-meta">
+                <div className="meta-item">
+                  <Clock size={14} />
+                  <span>诊断时间: {new Date(diagnosis.generated_at).toLocaleString()}</span>
+                </div>
+                <div className="meta-item">
+                  <span>AI 模型: {diagnosis.ai_provider} / {diagnosis.ai_model}</span>
                 </div>
               </div>
-            )}
-          </Card>
-        </Col>
+            </>
+          )}
+        </div>
 
         {/* 右侧：趋势图表 */}
-        <Col span={14}>
-          <Card title="人群规模趋势（近30天）" style={{ marginBottom: 24 }}>
+        <div className="detail-sidebar">
+          <div className="chart-card">
+            <div className="chart-header">
+              <h3>人群规模趋势</h3>
+              <span className="chart-period">近 30 天</span>
+            </div>
             {trend.length > 0 ? (
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={200}>
                 <AreaChart data={trend}>
                   <defs>
-                    <linearGradient id="colorScale" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#1890ff" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#1890ff" stopOpacity={0}/>
+                    <linearGradient id="scaleGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#2eaadc" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#2eaadc" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
                   <XAxis 
                     dataKey="date" 
                     tickFormatter={(value) => value.slice(5)}
+                    stroke="var(--text-tertiary)"
+                    fontSize={11}
                   />
-                  <YAxis tickFormatter={(value) => `${(value/10000).toFixed(0)}万`} />
+                  <YAxis 
+                    tickFormatter={(value) => `${(value/10000).toFixed(0)}万`}
+                    stroke="var(--text-tertiary)"
+                    fontSize={11}
+                  />
                   <Tooltip 
-                    formatter={(value) => [`${value.toLocaleString()} 人`, '人群规模']}
-                    labelFormatter={(label) => `日期: ${label}`}
+                    contentStyle={{ 
+                      background: 'var(--bg-card)', 
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '8px'
+                    }}
+                    formatter={(value) => [value.toLocaleString(), '人群规模']}
                   />
                   <Area
                     type="monotone"
                     dataKey="scale"
-                    stroke="#1890ff"
-                    fillOpacity={1}
-                    fill="url(#colorScale)"
+                    stroke="#2eaadc"
+                    fill="url(#scaleGradient)"
+                    strokeWidth={2}
                   />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div style={{ textAlign: 'center', padding: 50, color: '#999' }}>
-                暂无趋势数据
-              </div>
+              <div className="chart-empty">暂无数据</div>
             )}
-          </Card>
+          </div>
 
-          <Card title="活跃用户趋势（近30天）">
+          <div className="chart-card">
+            <div className="chart-header">
+              <h3>活跃用户趋势</h3>
+              <span className="chart-period">近 30 天</span>
+            </div>
             {trend.length > 0 ? (
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={trend}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
                   <XAxis 
                     dataKey="date"
                     tickFormatter={(value) => value.slice(5)}
+                    stroke="var(--text-tertiary)"
+                    fontSize={11}
                   />
-                  <YAxis tickFormatter={(value) => `${(value/10000).toFixed(0)}万`} />
-                  <Tooltip
-                    formatter={(value) => [`${value.toLocaleString()} 人`, '活跃用户']}
-                    labelFormatter={(label) => `日期: ${label}`}
+                  <YAxis 
+                    tickFormatter={(value) => `${(value/10000).toFixed(0)}万`}
+                    stroke="var(--text-tertiary)"
+                    fontSize={11}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      background: 'var(--bg-card)', 
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '8px'
+                    }}
+                    formatter={(value) => [value.toLocaleString(), '活跃用户']}
                   />
                   <Line
                     type="monotone"
                     dataKey="active_users"
-                    stroke="#52c41a"
+                    stroke="#10b981"
                     strokeWidth={2}
                     dot={false}
                   />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div style={{ textAlign: 'center', padding: 50, color: '#999' }}>
-                暂无趋势数据
-              </div>
+              <div className="chart-empty">暂无数据</div>
             )}
-          </Card>
-        </Col>
-      </Row>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

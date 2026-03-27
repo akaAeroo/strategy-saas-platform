@@ -1,0 +1,228 @@
+.data-import-page {
+  padding: 24px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 步骤指示器 */
+.steps-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 40px;
+  padding: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.step-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.step-item.active .step-icon {
+  background: var(--accent-color);
+  color: white;
+}
+
+.step-item.completed .step-icon {
+  background: #10b981;
+  color: white;
+}
+
+.step-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  transition: color 0.2s ease;
+}
+
+.step-item.active .step-title {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.step-connector {
+  width: 80px;
+  height: 2px;
+  background: var(--border-color);
+  margin: 0 16px;
+  position: relative;
+  top: -10px;
+}
+
+.step-connector.active {
+  background: #10b981;
+}
+
+/* 步骤内容 */
+.steps-content {
+  min-height: 500px;
+}
+
+.step-panel {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.step-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.step-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+.step-header p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.step-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+/* 步骤布局 */
+.step-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+}
+
+.data-summary {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  height: fit-content;
+}
+
+.data-summary h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 16px 0;
+}
+
+.summary-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.summary-card {
+  padding: 16px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.summary-card .value {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent-color);
+  margin-bottom: 4px;
+}
+
+.summary-card .label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.btn-secondary {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.chat-section {
+  min-height: 600px;
+}
+
+/* 策略结果 */
+.strategy-result {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.empty-strategy {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.empty-strategy p {
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.strategy-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .data-import-page {
+    padding: 20px;
+  }
+  
+  .steps-indicator {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .step-connector {
+    display: none;
+  }
+  
+  .step-layout {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "segment_id": "seg_new_users",
+  "segment_name": "新用户",
+  "health_score": 45,
+  "health_level": "critical",
+  "problems": [
+    {
+      "id": "p1",
+      "severity": "critical",
+      "title": "留存率极低",
+      "description": "7日留存率仅15%，远低于行业平均",
+      "metric": "retention_7d",
+      "change_percent": -30,
+      "affected_users": 360000
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "o1",
+      "type": "retention",
+      "title": "新用户教育",
+      "description": "通过引导提升留存，预计挽回20%流失用户",
+      "potential_users": 240000,
+      "confidence": 0.75
+    }
+  ],
+  "summary": "新用户健康度评分为45分，存在严重问题需要立即处理",
+  "suggestions": [
+    {
+      "id": "s1",
+      "action": "立即启动召回策略",
+      "priority": 1,
+      "expected_outcome": "提升用户留存率",
+      "related_problem_id": "p1"
+    }
+  ],
+  "metrics": {
+    "scale": 1200000,
+    "conversion_rate": 0.021,
+    "churn_rate_7d": 0.15,
+    "churn_rate_30d": 0.45,
+    "avg_order_value": 120,
+    "avg_orders_per_user": 1.1,
+    "gmv_30d": 3024000
+  },
+  "generated_at": "2026-03-27T02:51:45.370Z",
+  "ai_provider": "mock",
+  "ai_model": "fallback"
+}

@@ -46,6 +46,7 @@ async function registerInitCommand(name, options) {
         { name: 'OpenAI (GPT-4)', value: 'openai' },
         { name: 'Anthropic (Claude)', value: 'anthropic' },
         { name: 'Kimi / Kimi Code (Moonshot)', value: 'moonshot' },
+        { name: 'MiniMax', value: 'minimax' },
         { name: '智谱 AI (ChatGLM)', value: 'zhipu' },
         { name: '百度文心一言', value: 'baidu' },
         { name: '阿里通义千问', value: 'alibaba' },
@@ -118,6 +119,11 @@ MOONSHOT_BASE_URL=https://api.moonshot.cn/v1
 ZHIPU_API_KEY=${config.aiProvider === 'zhipu' ? config.aiApiKey : ''}
 ZHIPU_MODEL=glm-4
 ZHIPU_BASE_URL=https://open.bigmodel.cn/api/paas/v4
+
+# MiniMax配置
+MINIMAX_API_KEY=${config.aiProvider === 'minimax' ? config.aiApiKey : ''}
+MINIMAX_MODEL=MiniMax-Text-01
+MINIMAX_BASE_URL=https://api.minimax.chat/v1
 
 # 百度文心配置
 BAIDU_API_KEY=${config.aiProvider === 'baidu' ? config.aiApiKey : ''}

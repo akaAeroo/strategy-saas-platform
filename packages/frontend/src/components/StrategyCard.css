@@ -1,0 +1,199 @@
+.strategy-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.strategy-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background: linear-gradient(135deg, var(--accent-color), #667eea);
+  color: white;
+}
+
+.strategy-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.strategy-title-section h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.strategy-goal {
+  font-size: 14px;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.strategy-body {
+  padding: 24px;
+}
+
+.strategy-section {
+  margin-bottom: 24px;
+}
+
+.strategy-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.section-content {
+  padding-left: 24px;
+}
+
+.segment-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+}
+
+.segment-size {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.touch-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.touch-channel {
+  display: inline-flex;
+  padding: 4px 12px;
+  background: var(--bg-tertiary);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  width: fit-content;
+}
+
+.touch-message {
+  font-style: italic;
+  color: var(--text-secondary);
+  margin: 4px 0;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--accent-color);
+}
+
+.touch-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.offer-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.offer-type {
+  padding: 4px 12px;
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.offer-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.offer-validity {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.conversion-badge {
+  display: inline-flex;
+  padding: 8px 16px;
+  background: #d1fae5;
+  color: #065f46;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.execution-steps {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.execution-steps li {
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.strategy-footer {
+  display: flex;
+  gap: 12px;
+  padding: 20px 24px;
+  background: var(--bg-tertiary);
+  border-top: 1px solid var(--border-color);
+}
+
+.apply-btn,
+.save-btn {
+  flex: 1;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.apply-btn {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+}
+
+.apply-btn:hover {
+  background: var(--accent-hover);
+}
+
+.save-btn {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.save-btn:hover {
+  background: var(--bg-hover);
+}

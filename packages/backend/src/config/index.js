@@ -61,6 +61,13 @@ const config = {
       model: process.env.ZHIPU_MODEL || 'glm-4',
     },
     
+    // MiniMax
+    minimax: {
+      apiKey: process.env.MINIMAX_API_KEY || '',
+      baseUrl: process.env.MINIMAX_BASE_URL || 'https://api.minimax.chat/v1',
+      model: process.env.MINIMAX_MODEL || 'MiniMax-Text-01',
+    },
+    
     // 本地 Ollama
     ollama: {
       baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
