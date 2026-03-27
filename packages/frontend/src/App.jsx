@@ -14,11 +14,72 @@ import {
   ChevronRight,
   FileSpreadsheet
 } from 'lucide-react'
-import Dashboard from './pages/Dashboard'
-import Segments from './pages/Segments'
-import SegmentDetail from './pages/SegmentDetail'
-import DataImport from './pages/DataImport'
 import './App.css'
+
+// 页面组件
+const Dashboard = React.lazy(() => import('./pages/Dashboard'))
+const Segments = React.lazy(() => import('./pages/Segments'))
+const SegmentDetail = React.lazy(() => import('./pages/SegmentDetail'))
+const DataImport = React.lazy(() => import('./pages/DataImport'))
+
+// 加载占位符
+const PageLoader = () => (
+  <div style={{ 
+    display: 'flex', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    height: '60vh',
+    flexDirection: 'column',
+    gap: '16px'
+  }}>
+    <div className="loading-spinner" />
+    <p>加载中...</p>
+  </div>
+)
+
+// 错误边界组件
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { hasError: false, error: null }
+  }
+  
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error }
+  }
+  
+  componentDidCatch(error, errorInfo) {
+    console.error('页面错误:', error, errorInfo)
+  }
+  
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: 40, textAlign: 'center' }}>
+          <h2>页面加载出错</h2>
+          <p style={{ color: '#ef4444', marginTop: 16 }}>
+            {this.state.error?.message || '未知错误'}
+          </p>
+          <button 
+            onClick={() => window.location.reload()}
+            style={{ 
+              marginTop: 24, 
+              padding: '10px 20px',
+              background: '#2eaadc',
+              color: 'white',
+              border: 'none',
+              borderRadius: 6,
+              cursor: 'pointer'
+            }}
+          >
+            刷新页面
+          </button>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
 // 侧边栏导航项
 const navItems = [
@@ -58,11 +119,9 @@ const Sidebar = ({ isOpen, onClose }) => {
   
   return (
     <>
-      {/* 移动端遮罩 */}
       {isOpen && <div className="sidebar-overlay" onClick={onClose} />}
       
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
-        {/* Logo */}
         <div className="sidebar-header">
           <div className="logo">
             <Sparkles className="logo-icon" />
@@ -70,14 +129,6 @@ const Sidebar = ({ isOpen, onClose }) => {
           </div>
         </div>
         
-        {/* 搜索框 */}
-        <div className="sidebar-search">
-          <Search size={16} />
-          <input type="text" placeholder="搜索..." />
-          <span className="shortcut">⌘K</span>
-        </div>
-        
-        {/* 导航 */}
         <nav className="sidebar-nav">
           {navItems.map(item => {
             const Icon = item.icon
@@ -93,13 +144,11 @@ const Sidebar = ({ isOpen, onClose }) => {
               >
                 <Icon size={18} />
                 <span>{item.label}</span>
-                {item.badge && <span className="nav-badge">{item.badge}</span>}
               </Link>
             )
           })}
         </nav>
         
-        {/* 底部 */}
         <div className="sidebar-footer">
           <div className="user-info">
             <div className="avatar">
@@ -148,10 +197,6 @@ const Header = ({ onMenuClick }) => {
       <div className="header-right">
         <button className="header-btn">
           <Bell size={18} />
-          <span className="notification-dot" />
-        </button>
-        <button className="header-btn">
-          <Settings size={18} />
         </button>
       </div>
     </header>
@@ -170,12 +215,16 @@ const Layout = () => {
         <Header onMenuClick={() => setSidebarOpen(true)} />
         
         <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/segments" element={<Segments />} />
-            <Route path="/segments/:id" element={<SegmentDetail />} />
-            <Route path="/import" element={<DataImport />} />
-          </Routes>
+          <ErrorBoundary>
+            <React.Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/segments" element={<Segments />} />
+                <Route path="/segments/:id" element={<SegmentDetail />} />
+                <Route path="/import" element={<DataImport />} />
+              </Routes>
+            </React.Suspense>
+          </ErrorBoundary>
         </main>
       </div>
     </div>
