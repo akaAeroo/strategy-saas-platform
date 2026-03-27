@@ -72,7 +72,7 @@ const Segments = () => {
     const icons = {
       1: <TrophyOutlined style={{ color: '#ffd700' }} />,
       2: <TeamOutlined style={{ color: '#c0c0c0' }} />,
-      3: <UserOutlined style={{ color: '#cd7f32' } />
+      3: <UserOutlined style={{ color: '#cd7f32' }} />
     }
     return icons[level] || null
   }
