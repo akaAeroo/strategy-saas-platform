@@ -60,8 +60,9 @@ const config = {
     // 量化派 OpenCode - 星探·源曦 (本地部署)
     opencode: {
       apiKey: process.env.OPENCODE_API_KEY || '',
-      baseUrl: process.env.OPENCODE_BASE_URL || 'http://localhost:8000/v1',
-      model: process.env.OPENCODE_MODEL || 'xingtan',
+      baseUrl: process.env.OPENCODE_BASE_URL || 'http://10.4.16.154:5029/v1',
+      model: process.env.OPENCODE_MODEL || 'quantgroup/xingtan',
+      providerId: process.env.OPENCODE_PROVIDER_ID || 'quantgroup',
     },
     
     // 本地 Ollama

@@ -301,26 +301,34 @@ class AIService {
 
   /**
    * 调用量化派 OpenCode API (星探·源曦)
-   * OpenAI 兼容格式
+   * OpenAI 兼容格式，支持 provider_id
    */
   async _callOpenCode(prompt) {
+    // 构建请求体，支持 provider_id 字段
+    const requestBody = {
+      model: this.config.model,
+      messages: [
+        {
+          role: 'system',
+          content: '你是智能策略平台的人群诊断专家。请基于提供的人群数据，生成结构化诊断报告。'
+        },
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      temperature: this.diagnosisConfig.temperature,
+      max_tokens: this.diagnosisConfig.maxTokens
+    };
+    
+    // 如果配置了 provider_id，添加到请求体
+    if (this.config.providerId) {
+      requestBody.provider_id = this.config.providerId;
+    }
+    
     const response = await axios.post(
       `${this.config.baseUrl}/chat/completions`,
-      {
-        model: this.config.model,
-        messages: [
-          {
-            role: 'system',
-            content: '你是智能策略平台的人群诊断专家。请基于提供的人群数据，生成结构化诊断报告。'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: this.diagnosisConfig.temperature,
-        max_tokens: this.diagnosisConfig.maxTokens
-      },
+      requestBody,
       {
         headers: {
           'Authorization': `Bearer ${this.config.apiKey}`,

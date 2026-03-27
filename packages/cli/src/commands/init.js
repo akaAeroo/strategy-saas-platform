@@ -128,8 +128,9 @@ MINIMAX_BASE_URL=https://api.minimax.chat/v1
 
 # 量化派 OpenCode配置
 OPENCODE_API_KEY=${config.aiProvider === 'opencode' ? config.aiApiKey : ''}
-OPENCODE_MODEL=xingtan
-OPENCODE_BASE_URL=http://localhost:8000/v1
+OPENCODE_MODEL=quantgroup/xingtan
+OPENCODE_BASE_URL=http://10.4.16.154:5029/v1
+OPENCODE_PROVIDER_ID=quantgroup
 # 百度文心配置
 BAIDU_API_KEY=${config.aiProvider === 'baidu' ? config.aiApiKey : ''}
 BAIDU_SECRET_KEY=
