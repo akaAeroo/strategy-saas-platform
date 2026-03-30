@@ -2,6 +2,45 @@ import React from 'react';
 import { Target, Users, Gift, Calendar, TrendingUp, CheckCircle, ArrowRight } from 'lucide-react';
 import './StrategyCard.css';
 
+// 安全渲染值的辅助函数
+const SafeRender = ({ value }) => {
+  if (value === null || value === undefined) return null;
+  
+  if (typeof value === 'string' || typeof value === 'number') {
+    return <span>{value}</span>;
+  }
+  
+  if (typeof value === 'boolean') {
+    return <span>{value ? '是' : '否'}</span>;
+  }
+  
+  if (Array.isArray(value)) {
+    return (
+      <ul className="safe-list">
+        {value.map((item, i) => (
+          <li key={i}><SafeRender value={item} /></li>
+        ))}
+      </ul>
+    );
+  }
+  
+  if (typeof value === 'object') {
+    // 对象类型，遍历渲染
+    return (
+      <div className="safe-object">
+        {Object.entries(value).map(([key, val]) => (
+          <div key={key} className="safe-object-item">
+            <span className="safe-object-key">{key}:</span>
+            <span className="safe-object-value"><SafeRender value={val} /></span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  
+  return <span>{String(value)}</span>;
+};
+
 const StrategyCard = ({ strategy }) => {
   if (!strategy) return null;
 
@@ -10,18 +49,33 @@ const StrategyCard = ({ strategy }) => {
   // 统一字段名（支持中英文）
   const getValue = (...keys) => {
     for (const key of keys) {
-      if (data[key]) return data[key];
+      if (data[key] !== undefined && data[key] !== null) return data[key];
     }
     return null;
   };
 
-  const strategyName = getValue('策略名称', 'strategy_name', 'name');
-  const targetSegment = getValue('目标人群', 'target_segment', 'targetSegment', 'target');
-  const touchPlan = getValue('触达方案', 'touch_plan', 'touchPlan', 'channel');
-  const offer = getValue('权益设计', 'offer', '权益');
-  const expectedConversion = getValue('预期转化', 'expected_conversion', 'expectedConversion', '预估转化率');
-  const coreGoal = getValue('核心目标', 'core_goal', 'coreGoal', 'goal');
-  const executionPlan = getValue('执行方案', 'execution_plan', 'executionPlan', '执行步骤');
+  const strategyName = getValue('策略名称', 'strategy_name', 'name', '策略名称');
+  const targetSegment = getValue('目标人群', 'target_segment', 'targetSegment', 'target', '人群');
+  const touchPlan = getValue('触达方案', 'touch_plan', 'touchPlan', 'channel', '触达渠道');
+  const offer = getValue('权益设计', 'offer', '权益', '优惠');
+  const expectedConversion = getValue('预期转化', 'expected_conversion', 'expectedConversion', '预估转化率', 'conversion');
+  const coreGoal = getValue('核心目标', 'core_goal', 'coreGoal', 'goal', '目标');
+  const executionPlan = getValue('执行方案', 'execution_plan', 'executionPlan', '执行步骤', 'steps');
+
+  // 获取所有其他字段用于显示
+  const otherFields = Object.entries(data).filter(([key]) => {
+    const knownKeys = [
+      '策略名称', 'strategy_name', 'name',
+      '目标人群', 'target_segment', 'targetSegment', 'target', '人群',
+      '触达方案', 'touch_plan', 'touchPlan', 'channel', '触达渠道',
+      '权益设计', 'offer', '权益', '优惠',
+      '预期转化', 'expected_conversion', 'expectedConversion', '预估转化率', 'conversion',
+      '核心目标', 'core_goal', 'coreGoal', 'goal', '目标',
+      '执行方案', 'execution_plan', 'executionPlan', '执行步骤', 'steps',
+      'type', 'raw'
+    ];
+    return !knownKeys.includes(key);
+  });
 
   return (
     <div className="strategy-card">
@@ -31,7 +85,7 @@ const StrategyCard = ({ strategy }) => {
         </div>
         <div className="strategy-title-section">
           <h3>{strategyName || '运营策略'}</h3>
-          {coreGoal && <p className="strategy-goal">{coreGoal}</p>}
+          {coreGoal && <p className="strategy-goal"><SafeRender value={coreGoal} /></p>}
         </div>
       </div>
 
@@ -44,16 +98,7 @@ const StrategyCard = ({ strategy }) => {
               <span>目标人群</span>
             </div>
             <div className="section-content">
-              {typeof targetSegment === 'string' ? targetSegment : (
-                <>
-                  <p className="segment-name">{targetSegment.name || targetSegment.人群名称}</p>
-                  {(targetSegment.size || targetSegment.人数) && (
-                    <span className="segment-size">
-                      {(targetSegment.size || targetSegment.人数).toLocaleString()} 人
-                    </span>
-                  )}
-                </>
-              )}
+              <SafeRender value={targetSegment} />
             </div>
           </div>
         )}
@@ -66,26 +111,7 @@ const StrategyCard = ({ strategy }) => {
               <span>触达方案</span>
             </div>
             <div className="section-content">
-              {typeof touchPlan === 'string' ? touchPlan : (
-                <div className="touch-details">
-                  {(touchPlan.channel || touchPlan.渠道 || touchPlan.触达渠道) && (
-                    <span className="touch-channel">
-                      {touchPlan.channel || touchPlan.渠道 || touchPlan.触达渠道}
-                    </span>
-                  )}
-                  {(touchPlan.message || touchPlan.文案 || touchPlan.消息内容) && (
-                    <p className="touch-message">
-                      "{touchPlan.message || touchPlan.文案 || touchPlan.消息内容}"
-                    </p>
-                  )}
-                  {(touchPlan.time || touchPlan.时机 || touchPlan.发送时间) && (
-                    <span className="touch-time">
-                      <Calendar size={12} />
-                      {touchPlan.time || touchPlan.时机 || touchPlan.发送时间}
-                    </span>
-                  )}
-                </div>
-              )}
+              <SafeRender value={touchPlan} />
             </div>
           </div>
         )}
@@ -98,21 +124,7 @@ const StrategyCard = ({ strategy }) => {
               <span>权益设计</span>
             </div>
             <div className="section-content">
-              {typeof offer === 'string' ? offer : (
-                <div className="offer-details">
-                  <span className="offer-type">
-                    {offer.type || offer.类型 || '优惠券'}
-                  </span>
-                  <span className="offer-value">
-                    {offer.value || offer.价值 || offer.优惠力度}
-                  </span>
-                  {(offer.valid_days || offer.有效期 || offer.validDays) && (
-                    <span className="offer-validity">
-                      有效期 {(offer.valid_days || offer.有效期 || offer.validDays)} 天
-                    </span>
-                  )}
-                </div>
-              )}
+              <SafeRender value={offer} />
             </div>
           </div>
         )}
@@ -125,11 +137,13 @@ const StrategyCard = ({ strategy }) => {
               <span>预期效果</span>
             </div>
             <div className="section-content">
-              <div className="conversion-badge">
-                预估转化率 {(typeof expectedConversion === 'number' 
-                  ? (expectedConversion * 100).toFixed(1) 
-                  : expectedConversion)}%
-              </div>
+              {typeof expectedConversion === 'number' ? (
+                <div className="conversion-badge">
+                  预估转化率 {(expectedConversion * 100).toFixed(1)}%
+                </div>
+              ) : (
+                <SafeRender value={expectedConversion} />
+              )}
             </div>
           </div>
         )}
@@ -142,18 +156,22 @@ const StrategyCard = ({ strategy }) => {
               <span>执行步骤</span>
             </div>
             <div className="section-content">
-              {Array.isArray(executionPlan) ? (
-                <ol className="execution-steps">
-                  {executionPlan.map((step, i) => (
-                    <li key={i}>{typeof step === 'string' ? step : step.步骤 || step.step}</li>
-                  ))}
-                </ol>
-              ) : (
-                <p>{executionPlan}</p>
-              )}
+              <SafeRender value={executionPlan} />
             </div>
           </div>
         )}
+
+        {/* 其他字段 */}
+        {otherFields.map(([key, value]) => (
+          <div key={key} className="strategy-section">
+            <div className="section-label">
+              <span>{key}</span>
+            </div>
+            <div className="section-content">
+              <SafeRender value={value} />
+            </div>
+          </div>
+        ))}
       </div>
 
       <div className="strategy-footer">

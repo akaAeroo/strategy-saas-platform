@@ -1,0 +1,224 @@
+/**
+ * 触达内容 Agent
+ * 生成短信/Push/站内信内容
+ */
+
+const BaseAgent = require('../BaseAgent');
+const { getAgentSkills } = require('../skills');
+
+class ContentTemplateAgent extends BaseAgent {
+  constructor() {
+    super({
+      id: 'content_template',
+      name: '触达内容',
+      description: '生成短信/Push/站内信等营销内容',
+      icon: '💬',
+      color: '#8b5cf6',
+      category: 'content'
+    });
+
+    this.skills = getAgentSkills(this.id);
+    this.skillMap = {};
+    for (const skill of this.skills) {
+      this.skillMap[skill.id] = skill;
+    }
+  }
+
+  canHandle(input) {
+    const keywords = ['内容', '文案', '推送', '短信', 'Push', '站内信', '营销', '触达'];
+    return keywords.some(kw => (input.question || '').includes(kw)) ? 0.92 : 0.3;
+  }
+
+  getCapabilitiesDescription() {
+    return `- 生成短信文案
+- 创建Push通知
+- 编写站内信内容
+- 支持A/B测试变体
+- 个性化内容推荐`;
+  }
+
+  async *execute(input, context = {}) {
+    const { question, contentType, goal, productInfo, targetAudience } = input;
+
+    // 生成内容
+    if (question?.includes('生成') || question?.includes('创建') || contentType) {
+      const type = contentType || this.detectContentType(question);
+      const campaignGoal = goal || this.detectGoal(question);
+      
+      yield { type: 'content', data: `✍️ 正在生成${this.translateType(type)}内容...\n\n` };
+      
+      try {
+        const contentSkill = this.skillMap['content_generation'];
+        
+        if (contentSkill) {
+          const result = await contentSkill.execute({
+            contentType: type,
+            goal: campaignGoal,
+            targetAudience: targetAudience || {
+              size: 10000,
+              segments: [
+                { name: '高价值用户', characteristics: ['price_sensitive'] },
+                { name: '新用户', characteristics: ['new_user'] }
+              ]
+            },
+            productInfo: productInfo || {
+              name: '夏季新品',
+              highlight: '限时特惠',
+              discount: '5',
+              brand: '品牌名'
+            },
+            tone: 'friendly',
+            constraints: { maxLength: type === 'sms' ? 70 : 60 }
+          });
+
+          // 输出主内容
+          for (const content of result.contents) {
+            yield {
+              type: 'content',
+              data: `**主版本** （评分：${content.score}/100）\n\n`
+            };
+
+            if (type === 'push') {
+              yield {
+                type: 'content',
+                data: `**标题：** ${content.title}\n**内容：** ${content.body}\n\n`
+              };
+            } else if (type === 'sms') {
+              yield {
+                type: 'content',
+                data: `${content.message}\n\n`
+              };
+            }
+
+            // 合规检查结果
+            if (content.compliance?.issues?.length > 0) {
+              yield {
+                type: 'content',
+                data: `⚠️ **合规提醒：**\n${content.compliance.issues.map(i => `- ${i.suggestion}`).join('\n')}\n\n`
+              };
+            }
+          }
+
+          // 输出变体
+          if (result.variants.length > 0) {
+            yield { type: 'content', data: `**A/B 测试变体**\n\n` };
+            
+            for (const variant of result.variants.slice(0, 3)) {
+              yield {
+                type: 'content',
+                data: `**变体 ${variant.variantId}${variant.targetSegment ? `（${variant.targetSegment}）` : ''}**\n`
+              };
+
+              if (type === 'push') {
+                yield {
+                  type: 'content',
+                  data: `${variant.title}\n${variant.body}\n\n`
+                };
+              } else if (type === 'sms') {
+                yield {
+                  type: 'content',
+                  data: `${variant.message}\n\n`
+                };
+              }
+            }
+          }
+
+          // 输出元数据
+          yield {
+            type: 'content',
+            data: `**📊 内容统计**\n` +
+                  `• 目标人群：${result.metadata.targetSize.toLocaleString()} 人\n` +
+                  `• 内容类型：${this.translateType(result.metadata.contentType)}\n` +
+                  `• 语气风格：${result.metadata.tone}\n\n`
+          };
+        }
+      } catch (error) {
+        yield { type: 'error', data: `内容生成失败：${error.message}` };
+      }
+    }
+
+    // 生成标题（复用title_generation skill）
+    if (question?.includes('标题')) {
+      yield { type: 'content', data: '✨ 正在生成营销标题...\n\n' };
+      
+      try {
+        const titleSkill = this.skillMap['title_generation'];
+        
+        if (titleSkill) {
+          const result = await titleSkill.execute({
+            product: {
+              name: '夏季新品T恤',
+              brand: '时尚品牌',
+              category: '服装',
+              discount: '5',
+              features: ['透气', '舒适'],
+              benefits: ['限时5折', '包邮']
+            },
+            platform: 'taobao',
+            style: 'promotional',
+            count: 5
+          });
+
+          yield { type: 'content', data: `**生成的标题**（按评分排序）\n\n` };
+          
+          for (let i = 0; i < result.titles.length; i++) {
+            const title = result.titles[i];
+            yield {
+              type: 'content',
+              data: `${i + 1}. ${title.text}\n` +
+                    `   评分：${title.score}/100 | 长度：${title.length}字\n\n`
+            };
+          }
+
+          if (result.recommendations.length > 0) {
+            yield {
+              type: 'content',
+              data: `💡 **优化建议：**\n${result.recommendations.map(r => `- ${r.message}`).join('\n')}\n\n`
+            };
+          }
+        }
+      } catch (error) {
+        yield { type: 'error', data: `标题生成失败：${error.message}` };
+      }
+    }
+
+    await this.recordConversation(question || '生成内容', '内容生成完成', { important: true });
+    yield { type: 'complete', data: { success: true } };
+  }
+
+  detectContentType(question) {
+    if (question.includes('Push') || question.includes('推送')) return 'push';
+    if (question.includes('短信') || question.includes('SMS')) return 'sms';
+    if (question.includes('邮件') || question.includes('Email')) return 'email';
+    if (question.includes('站内信')) return 'in-app';
+    return 'push';
+  }
+
+  detectGoal(question) {
+    if (question.includes('促活') || question.includes('召回')) return 'reactivation';
+    if (question.includes('促销') || question.includes('优惠')) return 'promotional';
+    if (question.includes('通知')) return 'transactional';
+    return 'promotional';
+  }
+
+  translateType(type) {
+    const map = {
+      'push': 'Push推送',
+      'sms': '短信',
+      'email': '邮件',
+      'in-app': '站内信'
+    };
+    return map[type] || type;
+  }
+
+  getQuickActions() {
+    return [
+      { label: '💬 生成Push', prompt: '生成Push推送内容' },
+      { label: '📱 生成短信', prompt: '生成短信文案' },
+      { label: '✨ 生成标题', prompt: '生成商品营销标题' },
+      { label: '🎯 个性化推荐', prompt: '生成个性化营销内容' }
+    ];
+  }
+}
+
+module.exports = ContentTemplateAgent;

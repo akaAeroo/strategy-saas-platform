@@ -34,16 +34,8 @@
       "related_problem_id": "p1"
     }
   ],
-  "metrics": {
-    "scale": 500000,
-    "conversion_rate": 0.085,
-    "churn_rate_7d": 0.025,
-    "churn_rate_30d": 0.08,
-    "avg_order_value": 850,
-    "avg_orders_per_user": 5.2,
-    "gmv_30d": 42500000
-  },
-  "generated_at": "2026-03-27T02:50:33.474Z",
+  "metrics": {},
+  "generated_at": "2026-03-30T08:48:33.992Z",
   "ai_provider": "mock",
   "ai_model": "fallback"
 }

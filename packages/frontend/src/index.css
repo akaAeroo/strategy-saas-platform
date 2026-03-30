@@ -1,67 +1,118 @@
-/* Notion + Obsidian 风格设计系统 */
+/* Obsidian 风格设计系统 - 深色主题优先 */
 
 :root {
-  /* 亮色主题 (默认) */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f7f6f3;
-  --bg-tertiary: #f1f1ef;
-  --bg-hover: #efefef;
-  --bg-card: #ffffff;
+  /* === Obsidian 暗色主题 (默认) === */
+  --bg-primary: #1e1e1e;
+  --bg-secondary: #141414;
+  --bg-tertiary: #262626;
+  --bg-quaternary: #2d2d2d;
+  --bg-hover: #2a2a2a;
+  --bg-active: #363636;
+  --bg-card: #1e1e1e;
+  --bg-sidebar: #141414;
+  --bg-titlebar: #1a1a1a;
   
-  --text-primary: #37352f;
-  --text-secondary: #6b6b6b;
-  --text-tertiary: #9ca3af;
-  --text-inverse: #ffffff;
+  --text-primary: #d4d4d4;
+  --text-secondary: #a0a0a0;
+  --text-tertiary: #6e6e6e;
+  --text-muted: #4a4a4a;
+  --text-inverse: #1e1e1e;
+  --text-accent: #7ee787;
   
-  --border-color: #e3e2e0;
-  --border-light: #f0f0f0;
+  --border-color: #363636;
+  --border-light: #2a2a2a;
+  --border-accent: #4a4a4a;
   
-  --accent-color: #2eaadc;
-  --accent-hover: #2383a8;
-  --success-color: #4caf50;
-  --warning-color: #ff9800;
-  --error-color: #f44336;
+  --accent-color: #7ee787;
+  --accent-hover: #a5f3ac;
+  --accent-muted: #4ade80;
+  --success-color: #4ade80;
+  --warning-color: #fbbf24;
+  --error-color: #f87171;
+  --info-color: #60a5fa;
+  --purple-color: #c084fc;
+  --orange-color: #fb923c;
+  --cyan-color: #22d3ee;
   
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
   
-  --radius-sm: 4px;
+  --radius-sm: 3px;
   --radius-md: 6px;
   --radius-lg: 8px;
   
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
-  --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+  --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'JetBrains Mono', monospace;
   
-  --sidebar-width: 240px;
-  --header-height: 56px;
+  --sidebar-width: 280px;
+  --right-sidebar-width: 260px;
+  --header-height: 40px;
+  --titlebar-height: 40px;
+  --tab-height: 36px;
+  
+  /* Obsidian 特定 */
+  --nav-item-color: #999;
+  --nav-item-color-hover: #d4d4d4;
+  --nav-item-color-active: #d4d4d4;
+  --nav-item-background-hover: #2a2a2a;
+  --nav-item-background-active: #363636;
+  --nav-indentation-guide-color: #363636;
+  
+  --interactive-accent: #7ee787;
+  --interactive-accent-hover: #a5f3ac;
+  
+  --code-background: #1a1a1a;
+  --code-normal: #d4d4d4;
 }
 
-/* 暗黑主题 */
-[data-theme='dark'] {
-  --bg-primary: #1a1a1a;
-  --bg-secondary: #202020;
-  --bg-tertiary: #262626;
-  --bg-hover: #2a2a2a;
-  --bg-card: #252525;
+/* === Obsidian 亮色主题 === */
+[data-theme='light'] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-tertiary: #f0f0f0;
+  --bg-quaternary: #e8e8e8;
+  --bg-hover: #f0f0f0;
+  --bg-active: #e0e0e0;
+  --bg-card: #ffffff;
+  --bg-sidebar: #f5f5f5;
+  --bg-titlebar: #f0f0f0;
   
-  --text-primary: #e3e2e0;
-  --text-secondary: #9ca3af;
-  --text-tertiary: #6b7280;
-  --text-inverse: #1a1a1a;
+  --text-primary: #2d2d2d;
+  --text-secondary: #5a5a5a;
+  --text-tertiary: #8a8a8a;
+  --text-muted: #b0b0b0;
+  --text-inverse: #ffffff;
+  --text-accent: #16a34a;
   
-  --border-color: #2a2a2a;
-  --border-light: #333333;
+  --border-color: #e0e0e0;
+  --border-light: #f0f0f0;
+  --border-accent: #d0d0d0;
   
-  --accent-color: #2eaadc;
-  --accent-hover: #4db8e8;
-  --success-color: #4ade80;
-  --warning-color: #fbbf24;
-  --error-color: #f87171;
+  --accent-color: #16a34a;
+  --accent-hover: #15803d;
+  --accent-muted: #22c55e;
+  --success-color: #22c55e;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  --info-color: #3b82f6;
+  --purple-color: #a855f7;
+  --orange-color: #f97316;
+  --cyan-color: #06b6d4;
   
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  
+  --nav-item-color: #666;
+  --nav-item-color-hover: #2d2d2d;
+  --nav-item-color-active: #2d2d2d;
+  --nav-item-background-hover: #f0f0f0;
+  --nav-item-background-active: #e0e0e0;
+  --nav-indentation-guide-color: #e0e0e0;
+  
+  --code-background: #f5f5f5;
+  --code-normal: #2d2d2d;
 }
 
 * {
@@ -71,27 +122,29 @@
 }
 
 html {
-  font-size: 16px;
+  font-size: 14px;
 }
 
 body {
   font-family: var(--font-sans);
   background-color: var(--bg-secondary);
   color: var(--text-primary);
-  line-height: 1.6;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.3s ease, color 0.3s ease;
+  overflow: hidden;
 }
 
 #root {
-  min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
 }
 
-/* 滚动条样式 */
+/* === Obsidian 风格滚动条 === */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -99,47 +152,58 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--text-tertiary);
-  border-radius: 4px;
-  opacity: 0.3;
+  background: var(--border-accent);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
-  opacity: 0.5;
+  background: var(--text-tertiary);
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
-/* 选择文本颜色 */
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* === 选择文本颜色 === */
 ::selection {
   background: var(--accent-color);
   color: var(--text-inverse);
 }
 
-/* 通用按钮样式 */
+/* === Obsidian 风格按钮 === */
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: var(--radius-md);
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
-  background: var(--bg-card);
+  background: var(--bg-tertiary);
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .btn:hover {
   background: var(--bg-hover);
-  border-color: var(--text-tertiary);
+  border-color: var(--border-accent);
+}
+
+.btn:active {
+  background: var(--bg-active);
 }
 
 .btn-primary {
   background: var(--accent-color);
   border-color: var(--accent-color);
-  color: white;
+  color: var(--text-inverse);
 }
 
 .btn-primary:hover {
@@ -147,69 +211,336 @@ body {
   border-color: var(--accent-hover);
 }
 
-/* 卡片样式 */
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
 }
 
-.card:hover {
-  box-shadow: var(--shadow-md);
+.btn-ghost:hover {
+  background: var(--bg-hover);
 }
 
-/* 输入框样式 */
+.btn-icon {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+}
+
+/* === Obsidian 风格输入框 === */
 .input {
   width: 100%;
-  padding: 10px 14px;
+  padding: 6px 10px;
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-size: 14px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-size: 13px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .input:focus {
   outline: none;
   border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(46, 170, 220, 0.1);
+  box-shadow: 0 0 0 2px rgba(126, 231, 135, 0.2);
 }
 
-/* 标签样式 */
+.input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* === Obsidian 风格标签 === */
 .tag {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
   font-weight: 500;
   background: var(--bg-tertiary);
   color: var(--text-secondary);
+  border: 1px solid var(--border-color);
 }
 
-/* 分频器 */
+.tag-primary {
+  background: rgba(126, 231, 135, 0.15);
+  color: var(--accent-color);
+  border-color: rgba(126, 231, 135, 0.3);
+}
+
+.tag-purple {
+  background: rgba(192, 132, 252, 0.15);
+  color: var(--purple-color);
+  border-color: rgba(192, 132, 252, 0.3);
+}
+
+.tag-orange {
+  background: rgba(251, 146, 60, 0.15);
+  color: var(--orange-color);
+  border-color: rgba(251, 146, 60, 0.3);
+}
+
+.tag-cyan {
+  background: rgba(34, 211, 238, 0.15);
+  color: var(--cyan-color);
+  border-color: rgba(34, 211, 238, 0.3);
+}
+
+/* === 分隔线 === */
 .divider {
   height: 1px;
   background: var(--border-color);
-  margin: 24px 0;
+  margin: 8px 0;
 }
 
-/* 动画 */
+.divider-vertical {
+  width: 1px;
+  height: 100%;
+  background: var(--border-color);
+}
+
+/* === Obsidian 风格树形导航 === */
+.tree-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px 4px 16px;
+  color: var(--nav-item-color);
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s ease;
+}
+
+.tree-item:hover {
+  color: var(--nav-item-color-hover);
+  background: var(--nav-item-background-hover);
+}
+
+.tree-item.active {
+  color: var(--nav-item-color-active);
+  background: var(--nav-item-background-active);
+}
+
+.tree-item-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tree-item-content {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* === Obsidian 风格标签页 === */
+.tabs-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-primary);
+}
+
+.tabs-header {
+  display: flex;
+  align-items: center;
+  height: var(--tab-height);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.tabs-header::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--tab-height);
+  padding: 0 12px;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.tab:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.tab.active {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--accent-color);
+  margin-bottom: -1px;
+}
+
+.tab-close {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  opacity: 0.6;
+  transition: all 0.15s ease;
+}
+
+.tab-close:hover {
+  opacity: 1;
+  background: var(--bg-hover);
+}
+
+.tab-new {
+  width: var(--tab-height);
+  height: var(--tab-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tab-new:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.tabs-content {
+  flex: 1;
+  overflow: auto;
+  background: var(--bg-primary);
+}
+
+/* === 工具提示 === */
+.tooltip {
+  position: relative;
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  padding: 4px 8px;
+  background: var(--bg-quaternary);
+  color: var(--text-primary);
+  font-size: 11px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.15s ease;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* === 代码块 === */
+.code-block {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  background: var(--code-background);
+  color: var(--code-normal);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+}
+
+/* === 动画 === */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
-/* 响应式 */
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.2s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* === 加载动画 === */
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--accent-color);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* === 响应式 === */
 @media (max-width: 768px) {
   :root {
     --sidebar-width: 0px;
   }
+}
+
+/* === 辅助类 === */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.glass-effect {
+  background: rgba(30, 30, 30, 0.8);
+  backdrop-filter: blur(10px);
 }

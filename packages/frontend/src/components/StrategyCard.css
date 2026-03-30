@@ -197,3 +197,43 @@
 .save-btn:hover {
   background: var(--bg-hover);
 }
+
+/* SafeRender 样式 */
+.safe-list {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.safe-list li {
+  margin-bottom: 6px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.safe-object {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.safe-object-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.safe-object-key {
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 80px;
+}
+
+.safe-object-value {
+  flex: 1;
+  color: var(--text-primary);
+}
+
+.safe-object-value .safe-list {
+  margin-top: 4px;
+}

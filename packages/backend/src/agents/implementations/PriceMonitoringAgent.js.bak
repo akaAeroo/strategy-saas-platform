@@ -1,0 +1,244 @@
+/**
+ * 价格监控 Agent
+ * 抓取竞品价格，生成比价报告
+ */
+
+const BaseAgent = require('../BaseAgent');
+const { getAgentSkills } = require('../skills');
+
+class PriceMonitoringAgent extends BaseAgent {
+  constructor() {
+    super({
+      id: 'price_monitoring',
+      name: '价格监控',
+      description: '抓取竞品价格，生成比价报告和价格预警',
+      icon: '💰',
+      color: '#ef4444',
+      category: 'research'
+    });
+
+    this.skills = getAgentSkills(this.id);
+    this.skillMap = {};
+    for (const skill of this.skills) {
+      this.skillMap[skill.id] = skill;
+    }
+  }
+
+  canHandle(input) {
+    const keywords = ['价格', '竞品', '比价', '监控', '抓取', '竞争对手', '市场'];
+    return keywords.some(kw => (input.question || '').includes(kw)) ? 0.92 : 0.3;
+  }
+
+  getCapabilitiesDescription() {
+    return `- 抓取多平台价格
+- 生成比价报告
+- 价格趋势分析
+- 智能价格预警
+- 竞品动态监控`;
+  }
+
+  async *execute(input, context = {}) {
+    const { question, product, platforms, trackPrice } = input;
+
+    // 价格对比
+    if (question?.includes('比价') || question?.includes('对比') || product) {
+      yield { type: 'content', data: '🔍 正在抓取各平台价格...\n\n' };
+      
+      try {
+        const priceSkill = this.skillMap['price_compare'];
+        
+        if (priceSkill) {
+          const result = await priceSkill.execute({
+            product: product || {
+              name: 'iPhone 15 Pro 256GB',
+              referencePrice: 8999
+            },
+            platforms: platforms || ['taobao', 'jd', 'tmall'],
+            includeHistory: true
+          });
+
+          // 输出比价结果
+          yield { type: 'content', data: `**💰 价格对比结果**\n\n` };
+
+          // 最优价格
+          if (result.bestDeal) {
+            yield {
+              type: 'content',
+              data: `🏆 **最优选择：${result.bestDeal.platformName}**\n` +
+                    `价格：¥${result.bestDeal.price}\n` +
+                    `${result.bestDeal.savings > 0 ? `节省：¥${result.bestDeal.savings}（${result.bestDeal.savingsPercent}%）\n` : ''}` +
+                    `原因：${result.bestDeal.reason}\n\n`
+            };
+          }
+
+          // 各平台详情
+          yield { type: 'content', data: `**各平台详情：**\n\n` };
+          
+          for (const comp of result.comparisons) {
+            if (comp.error) {
+              yield {
+                type: 'content',
+                data: `❌ **${comp.platformName}**：${comp.error}\n\n`
+              };
+            } else if (comp.available) {
+              yield {
+                type: 'content',
+                data: `${comp.platform === result.bestDeal?.platform ? '🏆' : '•'} **${comp.platformName}**\n` +
+                      `  价格：¥${comp.price}${comp.promotionPrice ? `（促销价 ¥${comp.promotionPrice}）` : ''}\n` +
+                      `  ${comp.inStock ? '✅' : '❌'} 库存状态：${comp.inStock ? '有货' : '缺货'}\n` +
+                      `  ⭐ 评分：${comp.rating}（${comp.reviewCount}条评价）\n` +
+                      `  🚚 ${comp.shipping}\n\n`
+              };
+            }
+          }
+
+          // 统计信息
+          if (result.statistics) {
+            yield {
+              type: 'content',
+              data: `**📊 价格统计**\n` +
+                    `• 最低价：¥${result.statistics.lowest}\n` +
+                    `• 最高价：¥${result.statistics.highest}\n` +
+                    `• 平均价：¥${result.statistics.average}\n` +
+                    `• 价差幅度：${result.statistics.spread}%\n\n`
+            };
+          }
+
+          // 建议
+          if (result.recommendations.length > 0) {
+            yield { type: 'content', data: `**💡 购买建议**\n\n` };
+            
+            for (const rec of result.recommendations) {
+              const priorityEmoji = { high: '🔴', medium: '🟡', low: '🟢' }[rec.priority];
+              yield {
+                type: 'content',
+                data: `${priorityEmoji} ${rec.message}\n`
+              };
+            }
+            yield { type: 'content', data: '\n' };
+          }
+
+          // 历史趋势
+          if (result.history && result.history.length > 0) {
+            yield {
+              type: 'content',
+              data: `**📈 30天价格走势**\n` +
+                    `• 最高价：¥${Math.max(...result.history.map(h => h.maxPrice))}\n` +
+                    `• 最低价：¥${Math.min(...result.history.map(h => h.minPrice))}\n` +
+                    `• 当前处于${this.getPricePosition(result.history)}水平\n\n`
+            };
+          }
+        }
+      } catch (error) {
+        yield { type: 'error', data: `价格对比失败：${error.message}` };
+      }
+    }
+
+    // 趋势分析
+    if (question?.includes('趋势') || question?.includes('走势')) {
+      yield { type: 'content', data: '📈 正在分析价格趋势...\n\n' };
+      
+      try {
+        const trendSkill = this.skillMap['trend_analysis'];
+        
+        if (trendSkill) {
+          const history = this.generatePriceHistory(60);
+          
+          const result = await trendSkill.execute({
+            timeSeries: history,
+            metrics: ['price'],
+            windowSize: 7
+          });
+
+          const trend = result.trends[0];
+          
+          yield {
+            type: 'content',
+            data: `**价格趋势分析**\n\n` +
+                  `方向：${this.translateTrend(trend.direction)}\n` +
+                  `变化：${trend.change > 0 ? '+' : ''}${trend.change}%\n` +
+                  `波动率：${trend.volatility}%\n\n` +
+                  `**预测（未来7天）**\n` +
+                  `预计价格：¥${result.forecast.price?.values?.[6]?.value || 'N/A'}\n` +
+                  `趋势：${result.forecast.price?.trend === 'downward' ? '📉 下降' : result.forecast.price?.trend === 'upward' ? '📈 上升' : '➡️ 稳定'}\n\n`
+          };
+        }
+      } catch (error) {
+        yield { type: 'error', data: `趋势分析失败：${error.message}` };
+      }
+    }
+
+    // 设置价格预警
+    if (question?.includes('预警') || trackPrice) {
+      yield {
+        type: 'content',
+        data: `✅ **价格预警已设置**\n\n` +
+              `监控商品：${product?.name || 'iPhone 15 Pro'}\n` +
+              `目标价格：¥${trackPrice || '8500'}\n` +
+              `监控平台：淘宝、京东、天猫\n` +
+              `检查频率：每小时\n` +
+              `通知方式：Push + 邮件\n\n` +
+              `当价格降至目标值以下时，将立即通知您。\n`
+      };
+    }
+
+    await this.recordConversation(question || '价格监控', '价格分析完成', { important: true });
+    yield { type: 'complete', data: { success: true } };
+  }
+
+  generatePriceHistory(days) {
+    const data = [];
+    const today = new Date();
+    let basePrice = 8999;
+    
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      
+      // 模拟价格波动
+      basePrice += (Math.random() - 0.5) * 200;
+      basePrice = Math.max(7999, Math.min(9999, basePrice));
+      
+      data.push({
+        date: date.toISOString().split('T')[0],
+        price: Math.round(basePrice)
+      });
+    }
+    
+    return data;
+  }
+
+  getPricePosition(history) {
+    const prices = history.map(h => h.avgPrice || h.price);
+    const current = prices[prices.length - 1];
+    const min = Math.min(...prices);
+    const max = Math.max(...prices);
+    const range = max - min;
+    
+    if (current < min + range * 0.25) return '较低';
+    if (current > max - range * 0.25) return '较高';
+    return '中等';
+  }
+
+  translateTrend(direction) {
+    const map = {
+      'increasing_strongly': '🚀 快速上涨',
+      'increasing': '📈 上涨',
+      'decreasing_strongly': '🔻 快速下降',
+      'decreasing': '📉 下降',
+      'stable': '➡️ 稳定'
+    };
+    return map[direction] || direction;
+  }
+
+  getQuickActions() {
+    return [
+      { label: '🔍 比价查询', prompt: '查询商品多平台价格' },
+      { label: '📈 趋势分析', prompt: '分析商品价格走势' },
+      { label: '⚠️ 设置预警', prompt: '设置价格预警' },
+      { label: '📊 竞品监控', prompt: '监控竞品价格动态' }
+    ];
+  }
+}
+
+module.exports = PriceMonitoringAgent;

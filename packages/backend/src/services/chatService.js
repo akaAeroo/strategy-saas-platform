@@ -77,9 +77,20 @@ class ChatService {
 
       // 根据提供商调用不同的 API
       if (this.provider === 'minimax') {
-        yield* this._streamMinimax(messages);
-      } else if (this.provider === 'openai') {
-        yield* this._streamOpenAI(messages);
+        for await (const chunk of this._streamMinimax(messages)) {
+          if (chunk.type === 'content') {
+            fullResponse += chunk.data;
+          }
+          yield chunk;
+        }
+      } else if (this.provider === 'openai' || this.provider === 'opencode') {
+        // OpenCode 使用 OpenAI 兼容的流式 API
+        for await (const chunk of this._streamOpenAI(messages)) {
+          if (chunk.type === 'content') {
+            fullResponse += chunk.data;
+          }
+          yield chunk;
+        }
       } else {
         // 其他提供商使用模拟流式
         const response = await this._callAI(messages);
@@ -170,18 +181,25 @@ class ChatService {
   }
 
   /**
-   * OpenAI 流式 API
+   * OpenAI 流式 API (OpenAI-compatible, 支持 OpenCode)
    */
   async *_streamOpenAI(messages) {
+    const requestBody = {
+      model: this.aiConfig.model,
+      messages,
+      temperature: 0.7,
+      max_tokens: 2000,
+      stream: true
+    };
+    
+    // OpenCode 支持 provider_id 参数
+    if (this.provider === 'opencode' && this.aiConfig.providerId) {
+      requestBody.provider_id = this.aiConfig.providerId;
+    }
+    
     const response = await axios.post(
       `${this.aiConfig.baseUrl}/chat/completions`,
-      {
-        model: this.aiConfig.model,
-        messages,
-        temperature: 0.7,
-        max_tokens: 2000,
-        stream: true
-      },
+      requestBody,
       {
         headers: {
           'Authorization': `Bearer ${this.aiConfig.apiKey}`,
@@ -205,7 +223,7 @@ class ChatService {
         if (line.startsWith('data: ')) {
           try {
             const data = JSON.parse(line.slice(6));
-            if (data.choices && data.choices[0].delta.content) {
+            if (data.choices && data.choices[0].delta && data.choices[0].delta.content) {
               yield { type: 'content', data: data.choices[0].delta.content };
             }
           } catch (e) {

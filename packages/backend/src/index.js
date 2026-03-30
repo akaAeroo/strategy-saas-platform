@@ -12,6 +12,14 @@ const segmentsRouter = require('./routes/segments');
 const dashboardRouter = require('./routes/dashboard');
 const uploadRouter = require('./routes/upload');
 const chatRouter = require('./routes/chat');
+const chatUnifiedRouter = require('./routes/chat-unified');
+const aiAnalyzeRouter = require('./routes/aiAnalyze');
+const webSearchRouter = require('./routes/webSearch');
+const automationRouter = require('./routes/automation');
+const agentsRouter = require('./routes/agents');
+
+// 初始化 Agents
+const { initializeAgents } = require('./agents');
 
 const app = express();
 
@@ -43,6 +51,11 @@ app.use('/api/segments', segmentsRouter);
 app.use('/api/dashboard', dashboardRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/chat', chatRouter);
+app.use('/api/v2/chat', chatUnifiedRouter);
+app.use('/api/ai-analyze', aiAnalyzeRouter);
+app.use('/api/web-search', webSearchRouter);
+app.use('/api/automation', automationRouter);
+app.use('/api/agents', agentsRouter); // Agent 路由
 
 // 错误处理
 app.use((err, req, res, next) => {
@@ -65,17 +78,25 @@ app.use((req, res) => {
 // 启动服务
 const PORT = config.port;
 
-app.listen(PORT, () => {
-  console.log(`
+// 启动服务
+async function startServer() {
+  // 初始化 Agents
+  await initializeAgents();
+  
+  app.listen(PORT, () => {
+    console.log(`
 ╔════════════════════════════════════════════════╗
 ║     智能策略平台 - 后端服务                      ║
 ╠════════════════════════════════════════════════╣
 ║  服务地址: http://localhost:${PORT}              ║
 ║  环境: ${config.isDev ? '开发' : '生产'}                          ║
 ╚════════════════════════════════════════════════╝
-  `);
-  
-  validateConfig();
-});
+    `);
+    
+    validateConfig();
+  });
+}
+
+startServer();
 
 module.exports = app;
